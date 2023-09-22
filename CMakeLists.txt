@@ -37,17 +37,17 @@ MESSAGE(STATUS "WORHP include dir: ${WORHP_INCLUDE_DIR}")
 
 # Paths
 set (SRCS_EXE   
-                src/main.cpp
-                src/ut.cpp
-                src/aux_covariance.cpp
-                src/C_KeplerArc.cpp                
-                src/rendezvousUT_options.cpp
-                src/C_prb_RR_HMS.cpp
-                # src/C_prb_rendezvousUT.cpp
-                # src/C_prb_RR_MB.cpp
-                # src/C_prb_RR_HMS_uDV.cpp
-                # src/earthmars.cpp
-                # RR/src/prb_RR.cpp
+    src/main.cpp
+    src/ut.cpp
+    src/aux_covariance.cpp
+    src/C_KeplerArc.cpp                
+    src/rendezvousUT_options.cpp
+    src/C_prb_RR_HMS.cpp
+    # src/C_prb_rendezvousUT.cpp
+    # src/C_prb_RR_MB.cpp
+    # src/C_prb_RR_HMS_uDV.cpp
+    # src/earthmars.cpp
+    # RR/src/prb_RR.cpp
 )
 
 set (EXE_INCLUDE_DIR include)
@@ -60,11 +60,12 @@ set (EIGEN_INCLUDE_DIR "/usr/local/include/eigen3")
 include_directories("/usr/local/include")
 
 # Include
-include_directories(    ${EXE_INCUDE_DIR}
-                        ${EIGEN_INCLUDE_DIR}  
-                        ${EOS_INCLUDE_DIR}
-                        ${WORHP_INCLUDE_DIR}
-                        ${YAML_INCLUDE_DIRS}
+include_directories(    
+    ${EXE_INCUDE_DIR}
+    ${EIGEN_INCLUDE_DIR}  
+    ${EOS_INCLUDE_DIR}
+    ${WORHP_INCLUDE_DIR}
+    ${YAML_INCLUDE_DIRS}
 )
 
 # add the executable
@@ -91,10 +92,10 @@ endif()
 
 # link: inserisci le librerie da linkare
 set (LIBS  
-            #  ${EOS_LIBS}  
-            # ${LIBS_SUNDIALS}
-            ${YAML_CPP_LIBRARIES}
-            ${WORHP_LIBRARY}
+    #  ${EOS_LIBS}  
+    # ${LIBS_SUNDIALS}
+    ${YAML_CPP_LIBRARIES}
+    ${WORHP_LIBRARY}
 )
 
 # auto-link
