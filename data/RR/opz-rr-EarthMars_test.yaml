@@ -1,0 +1,48 @@
+solver:
+  nSeg1: 20                       # n. di segmenti                                             <----
+  nSeg2: 10                      
+  nLeg: 1
+  planar: false                   #
+  cov_collocation_mode: 0         #1 = tiangolare (L), 2 = Simmetrica (S), 3 = Xcorr  
+  E_uniform_time: true            # true | false
+  E_rendezvous:   true            # true | false
+  
+  DVstd_model: 1                  # 0 = sqrt(tr( cov(DV) )) 
+                                  # 1 = max eigval
+  cov_propagation:
+    mode: 0  # 1                  # 0 = UT, 1 = STM                                            <----
+    nSub: 10  # 10                 # Split the propagation into "nSub" arcs                     <----
+  
+  objective: 1                    # "1 = min DV, cstr Pf | 2 = min tr(Pf), cstr DV             (ToDO) solo 1 è implementato
+  E_DV_cstr: true                 # true | false                                               <----    
+  E_Pf_constraint: false          # true | false                                               <----    
+  objective_std: false            # true | false                                               <----    
+  E_nav_std: false                # true | false                                               <----     
+  v_RV_free: true                # true | false                                               <---- 
+  DV_RV_double: false                # true | false                                               <----     
+
+mission:
+  output_folder: "test_false/"
+  firstguess_folder: "test_false/" # type "d" for default folder "results/HMS-temp", otherwise type a folder in "dbSOL/"
+  muPrimary: 132712440018                     # [km^3/s^2]
+  r0_dim: [-140699693., -51614428., 980.]     # [km]
+  v0_dim: [9.774596, -28.07828, 4.337725e-4]  # [km/s]
+  rf_dim: [-172682023, 176959469, 7948912]    # [km]
+  vf_dim: [-16.427384, -14.860506,9.21486e-2] # [km/s]
+  tfin:  30135456   # [s]
+  DVtot_max: -1.                              # [km/s]  
+  DVtot_single_max: 1
+  
+  #questi sono valori sigma^2 
+  sigma_r0:     0.e-5   
+  sigma_v0:     0.e-6   
+  sigma_rf_des: 1.e-6     
+  sigma_vf_des: 1.e-7   
+  sigma_rRV:    1.e-6     
+  sigma_vRV:    1.e-7
+  Qd_r:         0.e-6    
+  Qd_v:         0.e-7     
+  Qd_level: 0 # 0: null, 1: small, 2: medium, 3: large
+
+  nav_sigma_r:  0.e-5  #1e-6
+  nav_sigma_v:  0.e-5  #1e-6
