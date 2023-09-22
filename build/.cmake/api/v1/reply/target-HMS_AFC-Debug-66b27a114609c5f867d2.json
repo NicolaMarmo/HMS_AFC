@@ -2,7 +2,7 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "DESTINY+"
+			"path" : "HMS_AFC"
 		}
 	],
 	"backtrace" : 1,
@@ -97,7 +97,7 @@
 			]
 		}
 	],
-	"id" : "DESTINY+::@6890427a1f51a3e7e1df",
+	"id" : "HMS_AFC::@6890427a1f51a3e7e1df",
 	"link" : 
 	{
 		"commandFragments" : 
@@ -122,8 +122,8 @@
 		],
 		"language" : "CXX"
 	},
-	"name" : "DESTINY+",
-	"nameOnDisk" : "DESTINY+",
+	"name" : "HMS_AFC",
+	"nameOnDisk" : "HMS_AFC",
 	"paths" : 
 	{
 		"build" : ".",

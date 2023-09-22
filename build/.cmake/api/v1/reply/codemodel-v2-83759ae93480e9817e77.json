@@ -26,7 +26,7 @@
 					[
 						0
 					],
-					"name" : "DESTINY+",
+					"name" : "HMS_AFC",
 					"targetIndexes" : 
 					[
 						0
@@ -37,9 +37,9 @@
 			[
 				{
 					"directoryIndex" : 0,
-					"id" : "DESTINY+::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-DESTINY+-Debug-4c6d0935abc604a85196.json",
-					"name" : "DESTINY+",
+					"id" : "HMS_AFC::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-HMS_AFC-Debug-66b27a114609c5f867d2.json",
+					"name" : "HMS_AFC",
 					"projectIndex" : 0
 				}
 			]

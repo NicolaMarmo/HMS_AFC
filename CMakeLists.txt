@@ -16,7 +16,7 @@ ELSE()
 ENDIF()
 
 # project name
-project("DESTINY+")
+project("HMS_AFC")
 
 # Include directories
 find_package(yaml-cpp REQUIRED)  # crea le variabili ${YAML_INCLUDE_DIRS} e ${YAML_CPP_LIBRARIES}

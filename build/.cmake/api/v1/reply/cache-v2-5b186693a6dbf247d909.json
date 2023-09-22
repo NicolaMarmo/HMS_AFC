@@ -823,7 +823,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "DESTINY+"
+			"value" : "HMS_AFC"
 		},
 		{
 			"name" : "CMAKE_RANLIB",
@@ -1164,6 +1164,30 @@
 			],
 			"type" : "INTERNAL",
 			"value" : "[-fopenmp][/usr/lib/gcc/x86_64-linux-gnu/7/libgomp.so][/usr/lib/x86_64-linux-gnu/libpthread.so][v()]"
+		},
+		{
+			"name" : "HMS_AFC_BINARY_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "/home/nicolamarmo/Documents/HMS_AFC/build"
+		},
+		{
+			"name" : "HMS_AFC_SOURCE_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "/home/nicolamarmo/Documents/HMS_AFC"
 		},
 		{
 			"name" : "OpenMP_COMPILE_RESULT_CXX_fopenmp",

@@ -11,7 +11,7 @@
 # =============================================================================
 
 # =============================================================================
-# Project: DESTINY+
+# Project: HMS_AFC
 # Configuration: Debug
 # =============================================================================
 
@@ -53,72 +53,72 @@ build CMakeFiles/edit_cache.util: CUSTOM_COMMAND
 build edit_cache: phony CMakeFiles/edit_cache.util
 
 # =============================================================================
-# Object build statements for EXECUTABLE target DESTINY+
+# Object build statements for EXECUTABLE target HMS_AFC
 
 
 #############################################
-# Order-only phony target for DESTINY+
+# Order-only phony target for HMS_AFC
 
-build cmake_object_order_depends_target_DESTINY+: phony || CMakeFiles/DESTINY+.dir
+build cmake_object_order_depends_target_HMS_AFC: phony || CMakeFiles/HMS_AFC.dir
 
-build CMakeFiles/DESTINY+.dir/src/main.cpp.o: CXX_COMPILER__DESTINY.2b ../src/main.cpp || cmake_object_order_depends_target_DESTINY+
-  DEP_FILE = CMakeFiles/DESTINY+.dir/src/main.cpp.o.d
+build CMakeFiles/HMS_AFC.dir/src/main.cpp.o: CXX_COMPILER__HMS_AFC ../src/main.cpp || cmake_object_order_depends_target_HMS_AFC
+  DEP_FILE = CMakeFiles/HMS_AFC.dir/src/main.cpp.o.d
   FLAGS = -fopenmp -g   -O3 -w -fopenmp -std=c++11 -std=gnu++11
   INCLUDES = -I/usr/local/include/eigen3
-  OBJECT_DIR = CMakeFiles/DESTINY+.dir
-  OBJECT_FILE_DIR = CMakeFiles/DESTINY+.dir/src
+  OBJECT_DIR = CMakeFiles/HMS_AFC.dir
+  OBJECT_FILE_DIR = CMakeFiles/HMS_AFC.dir/src
 
-build CMakeFiles/DESTINY+.dir/src/ut.cpp.o: CXX_COMPILER__DESTINY.2b ../src/ut.cpp || cmake_object_order_depends_target_DESTINY+
-  DEP_FILE = CMakeFiles/DESTINY+.dir/src/ut.cpp.o.d
+build CMakeFiles/HMS_AFC.dir/src/ut.cpp.o: CXX_COMPILER__HMS_AFC ../src/ut.cpp || cmake_object_order_depends_target_HMS_AFC
+  DEP_FILE = CMakeFiles/HMS_AFC.dir/src/ut.cpp.o.d
   FLAGS = -fopenmp -g   -O3 -w -fopenmp -std=c++11 -std=gnu++11
   INCLUDES = -I/usr/local/include/eigen3
-  OBJECT_DIR = CMakeFiles/DESTINY+.dir
-  OBJECT_FILE_DIR = CMakeFiles/DESTINY+.dir/src
+  OBJECT_DIR = CMakeFiles/HMS_AFC.dir
+  OBJECT_FILE_DIR = CMakeFiles/HMS_AFC.dir/src
 
-build CMakeFiles/DESTINY+.dir/src/aux_covariance.cpp.o: CXX_COMPILER__DESTINY.2b ../src/aux_covariance.cpp || cmake_object_order_depends_target_DESTINY+
-  DEP_FILE = CMakeFiles/DESTINY+.dir/src/aux_covariance.cpp.o.d
+build CMakeFiles/HMS_AFC.dir/src/aux_covariance.cpp.o: CXX_COMPILER__HMS_AFC ../src/aux_covariance.cpp || cmake_object_order_depends_target_HMS_AFC
+  DEP_FILE = CMakeFiles/HMS_AFC.dir/src/aux_covariance.cpp.o.d
   FLAGS = -fopenmp -g   -O3 -w -fopenmp -std=c++11 -std=gnu++11
   INCLUDES = -I/usr/local/include/eigen3
-  OBJECT_DIR = CMakeFiles/DESTINY+.dir
-  OBJECT_FILE_DIR = CMakeFiles/DESTINY+.dir/src
+  OBJECT_DIR = CMakeFiles/HMS_AFC.dir
+  OBJECT_FILE_DIR = CMakeFiles/HMS_AFC.dir/src
 
-build CMakeFiles/DESTINY+.dir/src/C_KeplerArc.cpp.o: CXX_COMPILER__DESTINY.2b ../src/C_KeplerArc.cpp || cmake_object_order_depends_target_DESTINY+
-  DEP_FILE = CMakeFiles/DESTINY+.dir/src/C_KeplerArc.cpp.o.d
+build CMakeFiles/HMS_AFC.dir/src/C_KeplerArc.cpp.o: CXX_COMPILER__HMS_AFC ../src/C_KeplerArc.cpp || cmake_object_order_depends_target_HMS_AFC
+  DEP_FILE = CMakeFiles/HMS_AFC.dir/src/C_KeplerArc.cpp.o.d
   FLAGS = -fopenmp -g   -O3 -w -fopenmp -std=c++11 -std=gnu++11
   INCLUDES = -I/usr/local/include/eigen3
-  OBJECT_DIR = CMakeFiles/DESTINY+.dir
-  OBJECT_FILE_DIR = CMakeFiles/DESTINY+.dir/src
+  OBJECT_DIR = CMakeFiles/HMS_AFC.dir
+  OBJECT_FILE_DIR = CMakeFiles/HMS_AFC.dir/src
 
-build CMakeFiles/DESTINY+.dir/src/rendezvousUT_options.cpp.o: CXX_COMPILER__DESTINY.2b ../src/rendezvousUT_options.cpp || cmake_object_order_depends_target_DESTINY+
-  DEP_FILE = CMakeFiles/DESTINY+.dir/src/rendezvousUT_options.cpp.o.d
+build CMakeFiles/HMS_AFC.dir/src/rendezvousUT_options.cpp.o: CXX_COMPILER__HMS_AFC ../src/rendezvousUT_options.cpp || cmake_object_order_depends_target_HMS_AFC
+  DEP_FILE = CMakeFiles/HMS_AFC.dir/src/rendezvousUT_options.cpp.o.d
   FLAGS = -fopenmp -g   -O3 -w -fopenmp -std=c++11 -std=gnu++11
   INCLUDES = -I/usr/local/include/eigen3
-  OBJECT_DIR = CMakeFiles/DESTINY+.dir
-  OBJECT_FILE_DIR = CMakeFiles/DESTINY+.dir/src
+  OBJECT_DIR = CMakeFiles/HMS_AFC.dir
+  OBJECT_FILE_DIR = CMakeFiles/HMS_AFC.dir/src
 
-build CMakeFiles/DESTINY+.dir/src/C_prb_RR_HMS.cpp.o: CXX_COMPILER__DESTINY.2b ../src/C_prb_RR_HMS.cpp || cmake_object_order_depends_target_DESTINY+
-  DEP_FILE = CMakeFiles/DESTINY+.dir/src/C_prb_RR_HMS.cpp.o.d
+build CMakeFiles/HMS_AFC.dir/src/C_prb_RR_HMS.cpp.o: CXX_COMPILER__HMS_AFC ../src/C_prb_RR_HMS.cpp || cmake_object_order_depends_target_HMS_AFC
+  DEP_FILE = CMakeFiles/HMS_AFC.dir/src/C_prb_RR_HMS.cpp.o.d
   FLAGS = -fopenmp -g   -O3 -w -fopenmp -std=c++11 -std=gnu++11
   INCLUDES = -I/usr/local/include/eigen3
-  OBJECT_DIR = CMakeFiles/DESTINY+.dir
-  OBJECT_FILE_DIR = CMakeFiles/DESTINY+.dir/src
+  OBJECT_DIR = CMakeFiles/HMS_AFC.dir
+  OBJECT_FILE_DIR = CMakeFiles/HMS_AFC.dir/src
 
 
 # =============================================================================
-# Link build statements for EXECUTABLE target DESTINY+
+# Link build statements for EXECUTABLE target HMS_AFC
 
 
 #############################################
-# Link the executable DESTINY+
+# Link the executable HMS_AFC
 
-build DESTINY+: CXX_EXECUTABLE_LINKER__DESTINY.2b CMakeFiles/DESTINY+.dir/src/main.cpp.o CMakeFiles/DESTINY+.dir/src/ut.cpp.o CMakeFiles/DESTINY+.dir/src/aux_covariance.cpp.o CMakeFiles/DESTINY+.dir/src/C_KeplerArc.cpp.o CMakeFiles/DESTINY+.dir/src/rendezvousUT_options.cpp.o CMakeFiles/DESTINY+.dir/src/C_prb_RR_HMS.cpp.o | /usr/lib/x86_64-linux-gnu/libyaml-cpp.so.0.6.2 /usr/lib/libworhp.so
+build HMS_AFC: CXX_EXECUTABLE_LINKER__HMS_AFC CMakeFiles/HMS_AFC.dir/src/main.cpp.o CMakeFiles/HMS_AFC.dir/src/ut.cpp.o CMakeFiles/HMS_AFC.dir/src/aux_covariance.cpp.o CMakeFiles/HMS_AFC.dir/src/C_KeplerArc.cpp.o CMakeFiles/HMS_AFC.dir/src/rendezvousUT_options.cpp.o CMakeFiles/HMS_AFC.dir/src/C_prb_RR_HMS.cpp.o | /usr/lib/x86_64-linux-gnu/libyaml-cpp.so.0.6.2 /usr/lib/libworhp.so
   FLAGS = -fopenmp -g
   LINK_LIBRARIES = /usr/lib/x86_64-linux-gnu/libyaml-cpp.so.0.6.2  -lworhp
-  OBJECT_DIR = CMakeFiles/DESTINY+.dir
+  OBJECT_DIR = CMakeFiles/HMS_AFC.dir
   POST_BUILD = :
   PRE_LINK = :
-  TARGET_FILE = DESTINY+
-  TARGET_PDB = DESTINY+.dbg
+  TARGET_FILE = HMS_AFC
+  TARGET_PDB = HMS_AFC.dbg
 
 # =============================================================================
 # Target aliases.
@@ -131,7 +131,7 @@ build DESTINY+: CXX_EXECUTABLE_LINKER__DESTINY.2b CMakeFiles/DESTINY+.dir/src/ma
 #############################################
 # Folder: /home/nicolamarmo/Documents/HMS_AFC/build
 
-build all: phony DESTINY+
+build all: phony HMS_AFC
 
 # =============================================================================
 # Built-in targets
