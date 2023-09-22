@@ -20,7 +20,7 @@ solver:
   objective_std: true            # true | false                                               <----    
   E_nav_std: true                # true | false                                               <----     
   v_RV_free: true                # true | false                                               <---- 
-  DV_RV_double: false                # true | false                                               <----     
+  DV_RV_double: false              # true | false                                               <----     
 
 mission:
   output_folder: "D+Q0NE05/"
