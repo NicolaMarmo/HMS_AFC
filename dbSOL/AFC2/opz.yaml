@@ -1,0 +1,66 @@
+solver:
+  nSeg1: 6
+  nSeg2: 3
+  nLeg: 1
+  planar: false
+  E_Pf_constraint: false
+  E_uniform_time: true
+  E_rendezvous: true
+  DVstd_model: 1
+  E_DV_cstr: true
+  objective: 1
+  objective_std: false
+  E_navigation_std: false
+  v_RV_free: true
+  DV_RV_double: false
+  cov_collocation_mode: 0
+  cov_propagation:
+    mode: 1
+    nSub: 10
+
+mission:
+  output_folder: AFC2/
+  firstguess_folder: AFC2/
+  muPrimary: 132712440018
+
+  r0_dim:
+    - 43148032.10833029
+    - 140976675.534384
+    - -8649.810755461451
+  v0_dim:
+    - -28.975216646133
+    - 8.615083608198541
+    - 2.87602449144941e-06
+  rf_dim:
+    - 43148032.10833029
+    - 140976675.534384
+    - -8649.810755461451
+  vf_dim:
+    - -28.975216646133
+    - 8.615083608198541
+    - 2.87602449144941e-06
+  rRV:
+    - 43148032.10833029
+    - 140976675.534384
+    - -8649.810755461451
+  vRV:
+    - -28.975216646133
+    - 8.615083608198541
+    - 2.87602449144941e-06
+  tfin1: 6.417635848612004
+  tfin2: 2.464924916907767
+  DVtot_max: -0.0333303571555654
+  DVtot_single_max: 0.0001
+
+  sigma_r0: 0
+  sigma_v0: 0
+  sigma_rf_des: 5e-07
+  sigma_vf_des: 5e-08
+  sigma_rRV: 5e-08
+  sigma_vRV: 5e-07
+  Qd_r: 0
+  Qd_v: 0
+  Qd_level: 0
+  nav_sigma_r: 0
+  nav_sigma_v: 0
+  sf: 1

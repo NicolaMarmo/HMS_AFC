@@ -1,16 +1,16 @@
 solver:
-  nSeg1: 28
-  nSeg2: 10
+  nSeg1: 7
+  nSeg2: 3
   nLeg: 2
   planar: false
-  E_Pf_constraint: true
+  E_Pf_constraint: false
   E_uniform_time: true
   E_rendezvous: true
   DVstd_model: 1
   E_DV_cstr: true
   objective: 1
-  objective_std: true
-  E_navigation_std: true
+  objective_std: false
+  E_navigation_std: false
   v_RV_free: true
   DV_RV_double: false
   cov_collocation_mode: 0
@@ -19,48 +19,48 @@ solver:
     nSub: 10
 
 mission:
-  output_folder: D+Q0NE05/
-  firstguess_folder: D+Q0NE04/
+  output_folder: AFC4/
+  firstguess_folder: AFC4/
   muPrimary: 132712440018
 
   r0_dim:
-    - 43148032.108330294
-    - 140976675.53438401
-    - -8649.8107554614508
+    - 43148032.10833029
+    - 140976675.534384
+    - -8649.810755461451
   v0_dim:
-    - -29.803821251985301
-    - 7.5368814160132303
-    - 0.64075732583706302
+    - -29.8038212519853
+    - 7.53688141601323
+    - 0.640757325837063
   rf_dim:
     - -70786621
     - -133919742
     - 8765
   vf_dim:
     - 24.5311438651119
-    - -16.081117506731001
-    - -0.64683913960512796
+    - -16.081117506731
+    - -0.646839139605128
   rRV:
     - 14739776
     - 138648434
     - 1279019
   vRV:
-    - -31.802839527118703
-    - 1.0800964367700701
-    - 0.63005625478254101
-  tfin1: 6.9354511198575191
-  tfin2: 2.4649249169077669
-  DVtot_max: -0.033330357155565399
-  DVtot_single_max: 0.0035000000000000001
+    - -31.8028395271187
+    - 1.08009643677007
+    - 0.630056254782541
+  tfin1: 6.935451119857519
+  tfin2: 2.464924916907767
+  DVtot_max: -0.0333303571555654
+  DVtot_single_max: 0.05
 
-  sigma_r0: 1.0000000000000001e-05
-  sigma_v0: 9.9999999999999995e-07
-  sigma_rf_des: 4.9999999999999998e-07
-  sigma_vf_des: 4.9999999999999998e-08
-  sigma_rRV: 4.9999999999999998e-08
-  sigma_vRV: 4.9999999999999998e-07
+  sigma_r0: 0
+  sigma_v0: 0
+  sigma_rf_des: 5e-07
+  sigma_vf_des: 5e-08
+  sigma_rRV: 5e-08
+  sigma_vRV: 5e-07
   Qd_r: 0
   Qd_v: 0
-  Qd_level: 3
+  Qd_level: 0
   nav_sigma_r: 0
   nav_sigma_v: 0
-  sf: 10000
+  sf: 1

@@ -8,8 +8,7 @@ C_KeplerMultiArc::C_KeplerMultiArc(Vector3d _r0, Vector3d _v0, VectorXd v_t, Mat
     Vector3d r0 = _r0;
     Vector3d v0 = _v0;
 
-    int nSeg = v_t.size()-1;
-
+    int nSeg = v_t.size() - 1;
 
     // primo arco ha durata nulla
     add_keplerArc(C_KeplerArc(r0,v0, v_t[0], 0.));
@@ -47,10 +46,6 @@ void C_KeplerMultiArc::print(ostream& os, int npt)
     }
     
 }
-
-
-
-
 
 void C_KeplerArc::get_final_state(Vector3d &rf, Vector3d &vf)
 {
@@ -111,9 +106,6 @@ void C_KeplerArc::print(ostream &os, int npt, bool header_on)
     }
 };
 
-
-
-
 void C_KeplerArc_UT::get_final_state(Vector3d &rf, Vector3d &vf, MatrixXd& Pf)
 {
 
@@ -135,8 +127,6 @@ void C_KeplerArc_UT::get_final_state(Vector3d &rf, Vector3d &vf, MatrixXd& Pf)
     vf = _vf;
     Pf = _Pf;
 };
-
-
 
 void C_KeplerArc_UT::print(ostream& os, bool header_on)
 {

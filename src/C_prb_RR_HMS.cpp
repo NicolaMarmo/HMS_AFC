@@ -658,7 +658,7 @@ void test_RR_HMS()
     //
     string opz_dir = "../data/RR/";
     //string fname_opz = opz_dir + "opz-rr-EarthMars_test.yaml"; 
-    string fname_opz = opz_dir + "opz-rr-D+.yaml"; 
+    string fname_opz = opz_dir + "opz-rr-AFC.yaml"; 
 
     C_prb_RR_HMS prb(fname_opz);
     
@@ -698,8 +698,7 @@ void test_RR_HMS()
 
     time_t tstart, tend; 
 
-    if (MaxIter>0)
-    {
+    if (MaxIter>0){
         prb.par.MaxIter = MaxIter;
         tstart = time(0);
         prb.solve();
@@ -711,8 +710,10 @@ void test_RR_HMS()
     //--------------------------//
     //      Post process        //
     //--------------------------//
-    
+    string cmd;
     string output_dir = "../results/HMS-temp/";
+
+    cmd = string("rm -r " + output_dir + "*"); system(cmd.c_str()); 
     system(string("mkdir -p " + output_dir).c_str());
 
     ofstream trajEfile("../results/HMS-temp/trajEfile.dat");
@@ -869,7 +870,7 @@ void test_RR_HMS()
         out_sommario << "FLeg = " << FLeg << endl;
 
         v_DVnorm.clear(); v_DVstd.clear();
-        traj.print(out_sol, 10);
+        traj.print(out_sol, 100);
         if (iLeg == nLeg - 1){
             out_sommario << endl;  
             out_sommario << "F = " << F << endl;
@@ -903,8 +904,8 @@ void test_RR_HMS()
         of_c << if_a.rdbuf() << if_b.rdbuf();
 
         string cmd;
-        cmd = "mkdir -p ../dbSOL/"+prb.opz.output_folder; system(cmd.c_str()); cout << cmd << endl;
-        cmd = string("cp -RT ") + "../results/HMS-temp" + " ../dbSOL/"+prb.opz.output_folder;  system(cmd.c_str()); cout << cmd << endl;
+        cmd = "mkdir -p ../dbSOL/" + prb.opz.output_folder; system(cmd.c_str()); //cout << cmd << endl;
+        cmd = string("cp -RT ") + "../results/HMS-temp" + " ../dbSOL/" + prb.opz.output_folder;  system(cmd.c_str()); //cout << cmd << endl;
         // cmd = "cp -RT " + output_dir + " ../dbSOL/"+prb.opz.output_folder;  system(cmd.c_str()); cout << cmd << endl;
     }
     cout << "It took " << difftime(tend, tstart) << " second(s) to solve the ROCP."<< endl;

@@ -20,9 +20,8 @@ set yrange [-1.8:1.8]
 rf = 1.6507
 
 scalaP = 1*chi_sq
-scalaV = 30
+scalaV = 5
 e_step = 1
-
 
 set style line 1 lw 2 lc 1
 set style line 2 lw 2 lc 2
@@ -45,7 +44,7 @@ plot trajE using 2:3 with l notitle lw 2 lc "blue", \
      fileELLs2 using ($1)+($3)*scalaP:($2) + ($4)*scalaP w l lc "dark-green" lw 2 notitle
 
 # ---------------------------------------------------------------#
-#                       Gain - plot                                 #
+#                       Gain - plot                              #
 # ---------------------------------------------------------------# 
 reset
 set term pngcairo enhanced color font "Arial-Bold, 20"  size 1600, 800 #lw 3
