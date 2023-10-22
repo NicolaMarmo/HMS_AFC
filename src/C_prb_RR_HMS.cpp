@@ -20,17 +20,23 @@
         double rf_norm;
         double thf;
         
-        if (iLeg == 1){
-            r0_norm = rRV.norm();
-            th0 = atan2(rRV(1),rRV(0));
+        if (iLeg == 0){
+            r0_norm = r0.norm();
+            th0 = atan2(r0(1),r0(0));
+            rf_norm = rRV_vector[0].norm();
+            thf = atan2(rRV_vector[0](1), rRV_vector[0](0)) + M_PI*2.*krev;
+        }
+        else if(iLeg == nLeg - 1){
+            r0_norm = rRV_vector[nLeg - 1].norm();
+            th0 = atan2(rRV_vector[nLeg - 1](1), rRV_vector[nLeg - 1](0));
             rf_norm = rf_des.norm();
             thf = atan2(rf_des(1), rf_des(0)) + M_PI*2.*krev;
         }
         else{
-            r0_norm = r0.norm();
-            th0 = atan2(r0(1),r0(0));
-            rf_norm = rRV.norm();
-            thf = atan2(rRV(1), rRV(0)) + M_PI*2.*krev;
+            r0_norm = rRV_vector[iLeg - 1].norm();
+            th0 = atan2(vRV_vector[iLeg - 1](1), vRV_vector[iLeg - 1](0));
+            rf_norm = rRV_vector[iLeg].norm();
+            thf = atan2(rRV_vector[iLeg](1), rRV_vector[iLeg](0)) + M_PI*2.*krev;
         }
         VectorXd v_r = VectorXd::LinSpaced(nSeg+1, r0_norm, rf_norm);
         VectorXd v_th = VectorXd::LinSpaced(nSeg+1, th0, thf);
@@ -116,15 +122,15 @@ C_prb_RR_HMS::C_prb_RR_HMS(string fname_opz){
     cout << "aconv = " << aconv << endl;
 
     t0 = 0;
-    tf1 = opz.tfin1;
-    tf2 = opz.tfin2;
-    tf_vector = {tf1, tf2};
-    nSeg_vector = {nSeg1, nSeg2};
+    // tf1 = opz.tfin1;
+    // tf2 = opz.tfin2;
+    tf_vector = opz.tfin_vector;
+    nSeg_vector = opz.nSeg_vector;
+    rRV_vector = opz.rRV_vector;
     r0 = opz.r0;
     v0 = opz.v0;
-    mass0 = 1.;
-    rf_des = opz.rf_des;
-    vf_des = opz.vf_des;
+    rf_des = opz.rf;
+    vf_des = opz.vf;
     rRV = opz.rRV;
     vRV = opz.vRV;
 
@@ -569,8 +575,8 @@ void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj)
         //
         
         if (iLeg == nLeg - 1){
-            r_G = opz.rf_des;
-            v_G = opz.vf_des;
+            r_G = opz.rf;
+            v_G = opz.vf;
         }
         else{
             r_G = opz.rRV;

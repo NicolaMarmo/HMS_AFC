@@ -10,6 +10,7 @@ using Eigen::MatrixXd;
 using namespace std;
 
 #include "twoBP_lite.h"
+#include "rk4_vector.h"
 
 void ut_propagation(int n);
 
@@ -73,10 +74,6 @@ class C_UT
 
 };
 
-
-
-
-
 void propagate_kepler_UT(Vector3d r0_mean, Vector3d v0_mean, MatrixXd P0, double dt_sec, double mu, MatrixXd Qd_k,
                         Vector3d& r1_mean, Vector3d& v1_mean, MatrixXd& P1);
 
@@ -88,3 +85,38 @@ void propagate_kepler_UT_MS(Vector3d r0_mean, Vector3d v0_mean, MatrixXd P0, dou
  */
 void propagate_kepler_STM(Vector3d r0_mean, Vector3d v0_mean, MatrixXd P0, double dt_sec, double mu, MatrixXd Qd_k,
                          Vector3d& r1_mean, Vector3d& v1_mean, MatrixXd& P1, int nSub=1);
+
+class EoM_Kepler_STM{
+    public:
+    double mu;
+    double tau;
+    EoM_Kepler_STM(double mu, double tau): mu(mu), tau(tau) {};
+
+    VectorXd operator()(double t, const VectorXd& x){
+        VectorXd dxdt(6);
+        Vector3d r = x.segment(0,3);
+        Vector3d a = -(mu*r)/(r.norm()*r.norm()*r.norm());
+
+        dxdt << tau*x.segment(3,3), tau*a;
+
+        return dxdt;
+    }
+};
+
+class EoM_Kepler_ODE{
+    public:
+    double mu;
+    double tau;
+    EoM_Kepler_ODE(double mu, double tau) : mu(mu), tau(tau) {};                   
+
+    void operator()(double t, double X[], double dXdt[]){
+        double rcube = pow((pow(X[0], 2) + pow(X[1], 2) + pow(X[2], 2)), 1.5); 
+
+        dXdt[0] = tau*X[3];
+        dXdt[1] = tau*X[4];
+        dXdt[2] = tau*X[5];
+        dXdt[3] = -tau*(mu*X[0])/rcube;
+        dXdt[4] = -tau*(mu*X[1])/rcube;
+        dXdt[5] = -tau*(mu*X[2])/rcube;
+    }
+};

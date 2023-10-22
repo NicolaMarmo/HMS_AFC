@@ -1,0 +1,34 @@
+                                   ..^~!77??????77!^:.                                    
+                               .:!?JJJJY5PPPGGPP55YJJJ?7^.                                
+                             ^?J?J5GB#&&&&&&&&&&&&&&#G5J?J?~.                             
+                          .!J??5#&&&&&&&&&&&&&&&&&&&&&&&#GJ?J?:                           
+                         7Y7JB&&5G&&&&&&&&&&#&&&&&&&&&&&J#&#57JJ.                         
+                       ^57?B&&&PP:#&&&&&&&&JY7#&&&&&&&&Y^BG&&#Y!57                        
+                      ?Y~G&&&&&~G7:#&&&#JJB.J:?P?P&&&&5.B!5&&&&#7?5.                      
+                     Y?!#&&&&&JY:#7:G&&&#Y^:G7:!G&&&&?.G5:P5&&&&&Y~P:                     
+                    5?7&&&&&&#:B^^&J.J&&&&&&&&&&&&&B^.BP P7?&&&&&&P^G:                    
+                   JJ!&&&&&&&&~^#::BP.^#&&&&&&&&&&P.~#Y JB.P&&&&&&&5~G.                   
+                  ^G:#&&&&&&&&B.7#~~&! B&&#B#BB&&&! BB.5B.~&&&&&&&&&7?Y                   
+                  P~5&&&&&&&&&&G.~#&Y.Y#Y!^!BY~~?G#^:B&P.~&&&&&&&&&&#:G:                  
+                 :G:&GPB##&&&&#5~.5G:BJ?!!!!GJ!!!7?GJ^&^.?P&&&&&#BGP#??J                  
+                 ?J7&#Y?777????77?5G#G??J77!:~77?J?J&GGY777????777?P&G^G                  
+                 5!Y&&#PJ?JJJYYJJJ~.?G~5Y:7^ .7!^B!YB^:7JJYYJJJ??YG&&#:B.                 
+                 P~5&&&&BJ7777!!!7#G.YYJJ  .^:. .G!#:~&P!!!!77775&&&&#:B.                 
+                 5!Y&&&&&&GY7!7?JJ5B5:YP#?..!^.^GBP7~BPYJ?7!!?5B&&&&&#:B.                 
+                 7Y!&&&&&&&&&#G5J?7.^B5?~~5PJ5G?^!YGP.^7?YPB#&&&&&&&&P^G                  
+                 :G:#&&&&&B#&&&&&&&:.&P?#J ?&#:.GG7#5 5&&&&&&#B&B#&&&!J?                  
+                  5!J&&P#!5J#&&&&&&~.&! B#.^&B !&7 B5 P&&&&&&PY?YJ#&B:B.                  
+                  :G:B&BP5&P?#&&&&&G GJ #G Y&&::&? #~:&&&&&&PY5G#G&&~Y?                   
+                   75^#&&PYYP5#&&&&&J~G.GG G&&~:&~~G:B&&&&#YJ5JYG&&?!P                    
+                    JY~#&##&&YJ&&&&&&PP7!B.G&&!^#:PY#&&&&#5Y7?YP&&J!P.                    
+                     ?Y~B&&&?7GGPB&&&&&#7B:5&&^YY5&&&&&BJ?75GPB&&77P.                     
+                      ~5!Y&&GB##Y7GG&&&&&#GJ&#?##&&&###?#P7JB#&G!YJ                       
+                       .YJ7G&&&7Y&G!B?BG&&###&&&G#&&GJY?P&&#&B?75~                        
+                         ^Y??P##BG5P!P&~GBYB!?#G:5&&&&#PG&&BJ7Y7.                         
+                           ^JJ?YG#&BB&&5!P&&7JY?G~&&&&&&B5??J!.                           
+                             .!JJJJ5GB###&&&B#&#&###BPYJJJ7:                              
+                                .^7?JJJJYY55P555YYJJJ?7~:                                 
+                                    ..:~~!77777!!~^:.                                                                                                          
+
+Sapienza University of Rome, Robust Trajectory Optimization for Impulsive Control
+Version of March 2023

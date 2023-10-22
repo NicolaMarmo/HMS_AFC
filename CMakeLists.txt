@@ -43,6 +43,7 @@ set (SRCS_EXE
     src/C_KeplerArc.cpp                
     src/rendezvousUT_options.cpp
     src/C_prb_RR_HMS.cpp
+    src/ode.cpp
     # src/C_prb_rendezvousUT.cpp
     # src/C_prb_RR_MB.cpp
     # src/C_prb_RR_HMS_uDV.cpp

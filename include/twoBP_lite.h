@@ -105,7 +105,6 @@ inline double kepler_U(const double mu, const double dt, const double ro, const 
     
     while ((abs(ratio) > error) & (n <= nMax))
     {
-        
         n = n + 1;
         double C = stumpC(ua*x*x);
         double S = stumpS(ua*x*x);

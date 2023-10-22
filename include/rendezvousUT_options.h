@@ -34,6 +34,11 @@ public:
     int nLeg;
 
     int sf;
+
+    vector<int> nSeg_vector;
+    vector<Vector3d> rRV_vector;
+    vector<Vector3d> vRV_vector;
+    vector<double> tfin_vector;
     
 // Mission Switch
     string output_folder;
@@ -62,8 +67,8 @@ public:
 
     Vector3d r0;
     Vector3d v0;    
-    Vector3d rf_des;
-    Vector3d vf_des;
+    Vector3d rf;
+    Vector3d vf;
     Vector3d rRV;
     Vector3d vRV;
     double sigma_r0;

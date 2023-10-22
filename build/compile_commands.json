@@ -33,5 +33,11 @@
   "directory": "/home/nicolamarmo/Documents/HMS_AFC/build",
   "command": "/usr/bin/g++-7   -I/usr/local/include/eigen3   -fopenmp -g   -O3 -w -fopenmp -std=c++11 -std=gnu++11 -o CMakeFiles/HMS_AFC.dir/src/C_prb_RR_HMS.cpp.o -c /home/nicolamarmo/Documents/HMS_AFC/src/C_prb_RR_HMS.cpp",
   "file": "/home/nicolamarmo/Documents/HMS_AFC/src/C_prb_RR_HMS.cpp"
+},
+
+{
+  "directory": "/home/nicolamarmo/Documents/HMS_AFC/build",
+  "command": "/usr/bin/g++-7   -I/usr/local/include/eigen3   -fopenmp -g   -O3 -w -fopenmp -std=c++11 -std=gnu++11 -o CMakeFiles/HMS_AFC.dir/src/ode.cpp.o -c /home/nicolamarmo/Documents/HMS_AFC/src/ode.cpp",
+  "file": "/home/nicolamarmo/Documents/HMS_AFC/src/ode.cpp"
 }
 ]

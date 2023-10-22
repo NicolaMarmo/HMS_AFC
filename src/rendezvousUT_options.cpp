@@ -56,29 +56,23 @@ Options_rendezvousUT_t::Options_rendezvousUT_t(const std::string &filename)
     nav_sigma_v =  options_yaml["mission"]["nav_sigma_v"].as<double>();
     
     // int n_r0_dim = options_yaml["mission"]["r0_dim"].size();
-    string name;
     for (int i=0; i<3; i++)    
-        r0(i) = options_yaml["mission"]["r0_dim"][i].as<double>(); 
+        r0(i) = options_yaml["mission"]["r0"][i].as<double>(); 
     
     for (int i=0; i<3; i++)    
-        v0(i) = options_yaml["mission"]["v0_dim"][i].as<double>(); 
+        v0(i) = options_yaml["mission"]["v0"][i].as<double>(); 
  
     for (int i=0; i<3; i++)    
-        rf_des(i) = options_yaml["mission"]["rf_dim"][i].as<double>(); 
+        rf(i) = options_yaml["mission"]["rf"][i].as<double>(); 
     
     for (int i=0; i<3; i++)    
-        vf_des(i) = options_yaml["mission"]["vf_dim"][i].as<double>(); 
+        vf(i) = options_yaml["mission"]["vf"][i].as<double>(); 
 
     for (int i=0; i<3; i++)    
-        rRV(i) = options_yaml["mission"]["rRV_dim"][i].as<double>(); 
+        rRV(i) = options_yaml["mission"]["rRV1"][i].as<double>(); 
     
     for (int i=0; i<3; i++)    
-        vRV(i) = options_yaml["mission"]["vRV_dim"][i].as<double>(); 
-
-    // double DVmax;   
-    DVtot_max = options_yaml["mission"]["DVtot_max"].as<double>(); 
-    DVtot_single_max = options_yaml["mission"]["DVtot_single_max"].as<double>();   // [km/s]
-    amrif = 1000; //kg
+        vRV(i) = options_yaml["mission"]["vRV1"][i].as<double>(); 
 
     // Nondimensionalization
     rconv = r0.norm();
@@ -86,14 +80,47 @@ Options_rendezvousUT_t::Options_rendezvousUT_t(const std::string &filename)
     aconv = vconv*vconv/rconv;
     tconv = rconv/vconv;
 
+    int nSeg;
+    double tfin;
+    string namenSeg, nametfin, namer, namev;
+    for(int i = 0; i < nLeg; i++){
+        namenSeg = "nSeg" + std::to_string(i + 1);
+        nametfin = "tfin" + std::to_string(i + 1);
+
+        nSeg =  options_yaml["solver"][namenSeg].as<int>();
+        tfin =  options_yaml["mission"][nametfin].as<double>()/tconv;
+
+        if(i < nLeg - 1){
+            namer = "rRV" + std::to_string(i + 1);
+            namev = "vRV" + std::to_string(i + 1);
+
+            for (int i=0; i<3; i++){    
+                rRV(i) = options_yaml["mission"][namer][i].as<double>()/rconv; 
+                vRV(i) = options_yaml["mission"][namev][i].as<double>()/vconv;
+            }
+        }
+
+        nSeg_vector.push_back(nSeg);
+
+        rRV_vector.push_back(rRV); 
+        vRV_vector.push_back(vRV);
+
+        tfin_vector.push_back(tfin);
+    }
+
+    // double DVmax;   
+    DVtot_max = options_yaml["mission"]["DVtot_max"].as<double>(); 
+    DVtot_single_max = options_yaml["mission"]["DVtot_single_max"].as<double>();   // [km/s]
+    amrif = 1000; //kg
+
     r0 = r0/rconv;
     v0 = v0/vconv;
-    rf_des = rf_des/rconv;
-    vf_des = vf_des/vconv;
-    rRV = rRV/rconv;
-    vRV = vRV/vconv;
-    tfin1 = tfin1/tconv;
-    tfin2 = tfin2/tconv;
+    rf = rf/rconv;
+    vf = vf/vconv;
+    // rRV = rRV/rconv;
+    // vRV = vRV/vconv;
+    // tfin1 = tfin1/tconv;
+    // tfin2 = tfin2/tconv;
 
     DVtot_max /= vconv;
     //DVtot_single_max /= vconv;
@@ -143,8 +170,8 @@ void Options_rendezvousUT_t::emit(const std::string &filename)
 
             vector<double> r0_dim={r0[0]*rconv, r0(1)*rconv, r0(2)*rconv};
             vector<double> v0_dim={v0[0]*vconv, v0(1)*vconv, v0(2)*vconv};
-            vector<double> rf_dim={rf_des[0]*rconv, rf_des(1)*rconv, rf_des(2)*rconv};
-            vector<double> vf_dim={vf_des[0]*vconv, vf_des(1)*vconv, vf_des(2)*vconv};
+            vector<double> rf_dim={rf[0]*rconv, rf(1)*rconv, rf(2)*rconv};
+            vector<double> vf_dim={vf[0]*vconv, vf(1)*vconv, vf(2)*vconv};
             vector<double> rRV_dim={rRV[0]*rconv, rRV(1)*rconv, rRV(2)*rconv};
             vector<double> vRV_dim={vRV[0]*vconv, vRV(1)*vconv, vRV(2)*vconv};
             //vector<double> tf_vector_dim(nLeg);

@@ -147,7 +147,6 @@ void propagate_kepler_UT_MS(Vector3d r0_mean, Vector3d v0_mean, MatrixXd P0, dou
 
 inline MatrixXd GGravity(const Vector3d& r, const double amu)
 {
-    
     double x=r(0);
     double y=r(1);
     double z=r(2);

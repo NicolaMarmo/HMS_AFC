@@ -3,6 +3,8 @@
 #include "ut.h"
 #include "C_KeplerArc.h"
 #include "rendezvousUT_options.h"
+#include "C_sim_ode.h"
+#include "ode.hpp"
 
 #include "aux_covariance.h"
 
@@ -73,9 +75,11 @@ class C_prb_RR_HMS
     //double *tf_vector_p;
     vector<double> tf_vector;
     vector<int> nSeg_vector;
+    vector<Vector3d> rRV_vector;
+    vector<Vector3d> vRV_vector;
     
     const int nRes = 6;     //n. di equazioni di continuità
-    const int nVars = 6 + 3 + 18; // YP [nVars x nSeg]    
+    const int nVars = 0 + 6 + 3 + 18; // YP [nVars x nSeg]    
     Options_rendezvousUT_t opz;
 
 

@@ -1,0 +1,91 @@
+solver:
+  nLeg: 8                        # n. di legs                                             <----
+  nSeg1: 3                       # n. di segmenti                                             <----
+  nSeg2: 3
+  nSeg3: 3
+  nSeg4: 4 
+  nSeg5: 4
+  nSeg6: 3 
+  nSeg7: 3
+  nSeg8: 3                    
+  planar: false                #
+  cov_collocation_mode: 0         #1 = tiangolare (L), 2 = Simmetrica (S), 3 = Xcorr  
+  E_uniform_time: true            # true | false
+  E_rendezvous:   true            # true | false
+  sf: 1                        # scaling factor of G
+  Nsub: 100                      # n. of sub-intervals for the integration of the dynamics
+  MaxIter: 10000
+  beta: 0.05
+
+  DVstd_model: 0                  # 1 = sqrt(max eigval)
+                                  # 0 = sqrt(tr(cov(DV)))
+
+  sigma_constraint: 0             # 1 = maximum sigma constraint
+                                  # 0 = maximum eigenvalue constraint
+  cov_propagation:
+    mode: 0  # 1                  # 0 = UT, 1 = STM                                            <----
+    nSub: 10  # 10                 # Split the propagation into "nSub" arcs                     <----
+
+  objective: 1                    # "1 = min DV, cstr Pf | 2 = min tr(Pf), cstr DV             (ToDO) solo 1 è implementato
+  E_DV_cstr: true                 # true | false                                               <----    
+  E_Pf_constraint: true           # true | false                                               <----    
+  objective_std: true          # true | false                                               <----    
+  E_nav_std: false                # true | false                                               <----     
+  v_RV_free: false                # true | false                                               <---- 
+  DV_RV_double: false                # true | false                                               <----     
+
+mission:
+  output_folder: "POQ4Ctrace/"
+  firstguess_folder: "POQ4Ctrace/" # type "d" for default folder "results/HMS-temp", otherwise type a folder in "dbSOL/"
+  mu: 0.012150584269940                     # [km^3/s^2]
+  r0: [1.027792609100, 0.000000000000, -0.185804418400]
+  v0: [0.000000000000, -0.115489663700, 0.000000000000]
+
+  rRV1: [1.024944560427, -0.022285499100, -0.176193894952]
+  vRV1: [-0.028595286162, -0.105891846969, 0.097633150245]
+
+  rRV2: [1.016544319282, -0.040546987837, -0.146351111691]
+  vRV2: [-0.055661068839, -0.073607670479, 0.206485898852]
+
+  rRV3: [1.003140205188, -0.048656644760, -0.091578393922]
+  vRV3: [-0.078262979392, 0.004984978605, 0.359338697387]
+
+  rRV4: [0.987244036809, -0.000000094974, 0.010896426746]
+  vRV4: [-0.000000454293, 1.461884161698, 0.000006653330]
+
+  rRV5: [1.003140203689, 0.048656650194, -0.091578342869]
+  vRV5: [0.078263009659, 0.004985084803, -0.359338831388]
+
+  rRV6: [1.016544324189, 0.040547005843, -0.146351080828]
+  vRV6: [0.055661103094, -0.073607633992, -0.206485983071]
+
+  rRV7: [1.024944572394, 0.022285521272, -0.176193879708]
+  vRV7: [0.028595322661, -0.105891839412, -0.097633226102]
+
+  rf: [1.027792609100, 0.000000000000, -0.185804418400]
+  vf: [0.000000000000, -0.115489663700, 0.000000000000]
+
+  tfin1: 0.198408932575
+  tfin2: 0.198408932575
+  tfin3: 0.198408932575
+  tfin4: 0.198408932575
+  tfin5: 0.198408932575
+  tfin6: 0.198408932575
+  tfin7: 0.198408932575
+  tfin8: 0.198408932575
+  DVtot_max: -1.                              # [km/s]  
+  DVtot_single_max: 0.00075
+  
+  #questi sono valori sigma^2 
+  sigma_r0:     3.007812250915549e-10
+  sigma_v0:     1.058507277096466e-07
+  sigma_rf_des: 3.007812250915549e-10   
+  sigma_vf_des: 1.058507277096466e-07  
+  sigma_rRV:    3.007812250915549e-10   
+  sigma_vRV:    1.058507277096466e-07 
+  Qd_r:         0.e-6    
+  Qd_v:         0.e-7     
+  Qd_level: 4 # 0: null, 1: small (), 2: medium (), 3: large (5e-6, 5e-7), 4: extra large (1e-5, 1e-6), 5: extra extra large ()
+
+  nav_sigma_r: 0.e-7  
+  nav_sigma_v: 0.e-8  
