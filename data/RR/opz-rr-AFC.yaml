@@ -1,5 +1,5 @@
 solver:
-  nSeg1: 7                       # n. di segmenti                                             <----
+  nSeg1: 4                       # n. di segmenti                                             <----
   nSeg2: 3                      
   nLeg: 2
   planar: false                   #
@@ -23,8 +23,8 @@ solver:
   DV_RV_double: false             # true | false                                               <----     
 
 mission:
-  output_folder: "AFC5/"
-  firstguess_folder: "AFC4/" # type "d" for default folder "results/HMS-temp", otherwise type a folder in "dbSOL/"
+  output_folder: "AFC7/"
+  firstguess_folder: "AFC6/" # type "d" for default folder "results/HMS-temp", otherwise type a folder in "dbSOL/"
   muPrimary: 132712440018                     # [km^3/s^2]
   r0: [43148032.1083303, 140976675.534384, -8649.81075546145]   
   v0: [-29.8038212519853,	7.53688141601323,	0.640757325837063] 
@@ -36,7 +36,7 @@ mission:
   tfin1:  3.408052305789995e+07   # [s] 3.408052305789995e+07 1.211254019599998e+07
   tfin2:  1.211254019599998e+07
   DVtot_max: -1.                              # [km/s]  
-  DVtot_single_max: 0.05
+  DVtot_single_max: 0.04
   
   #questi sono valori sigma^2 
   sigma_r0:     0.e-5   

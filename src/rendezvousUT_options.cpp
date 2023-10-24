@@ -128,8 +128,7 @@ Options_rendezvousUT_t::Options_rendezvousUT_t(const std::string &filename)
 
 
  
-void Options_rendezvousUT_t::emit(const std::string &filename)
-{
+void Options_rendezvousUT_t::emit(const std::string &filename){
 
     YAML::Emitter out;
 

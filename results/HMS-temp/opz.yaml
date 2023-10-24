@@ -1,5 +1,5 @@
 solver:
-  nSeg1: 7
+  nSeg1: 4
   nSeg2: 3
   nLeg: 2
   planar: false
@@ -19,8 +19,8 @@ solver:
     nSub: 10
 
 mission:
-  output_folder: AFC5/
-  firstguess_folder: AFC4/
+  output_folder: AFC7/
+  firstguess_folder: AFC6/
   muPrimary: 132712440018
 
   r0_dim:
@@ -50,7 +50,7 @@ mission:
   tfin1: 34080523.05789995
   tfin2: 12112540.19599998
   DVtot_max: -0.0333303571555654
-  DVtot_single_max: 0.05
+  DVtot_single_max: 0.04
 
   sigma_r0: 0
   sigma_v0: 0

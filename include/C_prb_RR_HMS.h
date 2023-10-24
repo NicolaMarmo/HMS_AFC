@@ -79,7 +79,7 @@ class C_prb_RR_HMS
     vector<Vector3d> vRV_vector;
     
     const int nRes = 6;     //n. di equazioni di continuità
-    const int nVars = 0 + 6 + 3 + 18; // YP [nVars x nSeg]    
+    const int nVars = 1 + 6 + 3 + 18; // YP [nVars x nSeg]    
     Options_rendezvousUT_t opz;
 
 
@@ -217,13 +217,13 @@ class C_prb_RR_HMS
         if (ans.compare("S") == 0 || ans.compare("s") == 0)
         {
             ofstream out_fullsol(fname);
-            for (int iLeg=0; iLeg<nLeg; iLeg++){
+            for (int iLeg=0; iLeg < nLeg; iLeg++){
                 nSeg = nSeg_vector[iLeg];
                 for (int k=0; k<nSeg+1; k++) // Warning!
                 {
                     int i0 = nVars*(accumulate(nSeg_vector.begin(), nSeg_vector.begin() + iLeg, 0.) + iLeg) + k*nVars;
                     //int i0 = iLeg*(nSeg+1)*nVars + k*nVars;
-                    for (int j = 0; j<nVars; j++)
+                    for (int j = 0; j < nVars; j++)
                         out_fullsol << fixed << setw(14) << setprecision(8) << opt.X[i0 + j] << " ";
                     out_fullsol << endl;
                 }
