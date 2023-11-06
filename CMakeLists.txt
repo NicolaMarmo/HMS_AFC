@@ -52,11 +52,13 @@ set (SRCS_EXE
 )
 
 set (EXE_INCLUDE_DIR include)
+#set(CSPICE_INCLUDE_DIR "/usr/local/include/cspice")  # Set the path to CSPICE include directory
+#set(CSPICE_LIBRARY "/usr/local/include/cspice/lib/cspice.a")  # Set the path to the CSPICE library file
 
 # set (EOS_HOME ${PROJECT_SOURCE_DIR}/ext/EOS)
 # set (EOS_INCLUDE_DIR ${EOS_HOME}/include)
 
-set (EIGEN_INCLUDE_DIR "/usr/local/include/eigen3")
+set(EIGEN_INCLUDE_DIR "/usr/local/include/eigen3")
 
 include_directories("/usr/local/include")
 
@@ -67,6 +69,7 @@ include_directories(
     ${EOS_INCLUDE_DIR}
     ${WORHP_INCLUDE_DIR}
     ${YAML_INCLUDE_DIRS}
+    #${CSPICE_INCLUDE_DIR}
 )
 
 # add the executable
@@ -80,23 +83,13 @@ if (OPENMP_FOUND)
     set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 endif()
 
-# CVODE library
-# set (SUNDIALS_CVODE "/usr/local/lib/libsundials_cvode.so")
-# set (SUNDIALS_NVECTSERIAL   "/usr/local/lib/libsundials_nvecserial.so")
-# set (LIBS_SUNDIALS ${SUNDIALS_CVODE} ${SUNDIALS_NVECTSERIAL})
-
-
-# EOS library
-# set (EOS_LIB_CPP "${PROJECT_SOURCE_DIR}/ext/EOS/lib/libEOS.a")
-# set (EOS_LIB_C   "${PROJECT_SOURCE_DIR}/ext/EOS/lib/libEOS.so")
-# set (EOS_LIBS ${EOS_LIB_CPP} ${EOS_LIB_C})
-
 # link: inserisci le librerie da linkare
 set (LIBS  
     #  ${EOS_LIBS}  
     # ${LIBS_SUNDIALS}
     ${YAML_CPP_LIBRARIES}
     ${WORHP_LIBRARY}
+    #${CSPICE_LIBRARY}
 )
 
 # auto-link

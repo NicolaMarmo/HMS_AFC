@@ -28,6 +28,7 @@ Options_rendezvousUT_t::Options_rendezvousUT_t(const std::string &filename)
     E_nav_std = options_yaml["solver"]["E_nav_std"].as<bool>();
     v_RV_free = options_yaml["solver"]["v_RV_free"].as<bool>();
     DV_RV_double = options_yaml["solver"]["DV_RV_double"].as<bool>();
+    Fixed_DT = options_yaml["solver"]["Fixed_DT"].as<bool>();
     
     objective_std= options_yaml["solver"]["objective_std"].as<bool>();
     cov_collocation_mode= options_yaml["solver"]["cov_collocation_mode"].as<int>();
@@ -151,6 +152,7 @@ void Options_rendezvousUT_t::emit(const std::string &filename){
             out << YAML::Key << "E_navigation_std" << YAML::Value << E_nav_std;
             out << YAML::Key << "v_RV_free" << YAML::Value << v_RV_free;
             out << YAML::Key << "DV_RV_double" << YAML::Value << DV_RV_double;
+            out << YAML::Key << "Fixed_DT" << YAML::Value << Fixed_DT;
             out << YAML::Key << "cov_collocation_mode" << YAML::Value << cov_collocation_mode;
             out << YAML::Key << "cov_propagation";
             out << YAML::BeginMap;

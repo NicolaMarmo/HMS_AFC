@@ -255,6 +255,8 @@ int C_prb_RR_HMS::setup_worph(double *Xguess){
 
     if (opz.E_DV_cstr) opt.m += accumulate(nSeg_vector.begin(), nSeg_vector.end(), 0.) + nLeg; //ciascun DV è vincolato
 
+    if (opz.Fixed_DT) opt.m += nLeg; // TOF of each leg is fixed
+
     // All derivatives for this problem have a sparse structure, so  set the amount of nonzeros here
     wsp.DF.nnz = WorhpMatrix_Init_Dense;  
     wsp.DG.nnz = WorhpMatrix_Init_Dense;  
@@ -291,7 +293,7 @@ int C_prb_RR_HMS::setup_worph(double *Xguess){
     // bound generici 
     int nSeg;
     double tfin, Np1L;
-    for (int iLeg = 0; iLeg < nLeg; iLeg++){
+    for(int iLeg = 0; iLeg < nLeg; iLeg++){
         nSeg = nSeg_vector[iLeg];
         tfin = tf_vector[iLeg];
         Np1L = accumulate(nSeg_vector.begin(), nSeg_vector.begin() + iLeg, 0.) + iLeg;
@@ -397,9 +399,10 @@ int C_prb_RR_HMS::setup_worph(double *Xguess){
         // Vincoli: Residui + Condizioni al contorno
         // residuo r & v
         for (int iSeg = 0; iSeg < nSeg; iSeg++){
-            int iG0 = nRes*accumulate(nSeg_vector.begin(), nSeg_vector.begin() + iLeg, 0.) + 6*iLeg + Np1L + iSeg*(nRes); // r, v, sigma_rf, sigma_vf, DV
+            int iG0 = (nRes + 1)*Np1L + iSeg*(nRes); // r, v, sigma_rf, sigma_vf, DV
             //int iG0 = iLeg*(nSeg*nRes + 6 + nSeg + 1) + iSeg*(nRes);
             if(opz.E_Pf_constraint) iG0 += 6*iLeg;
+            if(opz.Fixed_DT) iG0 += iLeg;
 
             //residuo_rv
             for (int j = 0; j < 6; j++){  
@@ -408,28 +411,25 @@ int C_prb_RR_HMS::setup_worph(double *Xguess){
         }
 
         // condizioni contorno finale
-        int iG0 = nRes*accumulate(nSeg_vector.begin(), nSeg_vector.begin() + iLeg, 0.) + 6*iLeg + Np1L + nSeg*(nRes);
+        int iG0 = (nRes + 1)*Np1L + nSeg*(nRes);
         //int iG0 = iLeg*(nSeg*nRes + 6 + nSeg + 1) + nSeg*(nRes);
         if (opz.E_Pf_constraint) iG0 += 6*iLeg;
+        if(opz.Fixed_DT) iG0 += iLeg;
 
         for (int i = 0; i < 6; i++){
             opt.GL[iG0 + i] = opt.GU[iG0 + i] = 0; 
         }
 
-        if (opz.obj_func_switch == 1)   // vincola Pf e DV
-        {
+        if (opz.obj_func_switch == 1){   // vincola Pf e DV
             // covarianza di posizione finale: Pr - Prdes < 0
-            if (opz.E_Pf_constraint)
-            {
-                for (int j=0; j<6; j++)
-                {
+            if (opz.E_Pf_constraint){
+                for (int j = 0; j < 6; j++){
                     opt.GL[iG0 + 6 + j] = -par.Infty;   
                     opt.GU[iG0 + 6 + j] = 0;
                 }
             } 
             // DVcstr: DV[k] - DV_max < 0
-            if (opz.E_DV_cstr)
-            {
+            if (opz.E_DV_cstr){
                 int nPf_cstr = 0;
                 if (opz.E_Pf_constraint) nPf_cstr = 6;
                 for (int j = 0; j < nSeg + 1; j++)
@@ -439,12 +439,11 @@ int C_prb_RR_HMS::setup_worph(double *Xguess){
                 }
             } 
         }
-        else if (opz.obj_func_switch == 2)   // vincola DV e minimizza Pf
-        {
+
+        else if (opz.obj_func_switch == 2){   // vincola DV e minimizza Pf
             // DVcstr: DV[k] - DV_max < 0
             int nPf_cstr = 0;
-            for (int j = 0; j < nSeg + 1; j++)
-            {
+            for (int j = 0; j < nSeg + 1; j++){
                 opt.GL[iG0 + 6 + nPf_cstr + j] = -par.Infty; 
                 opt.GU[iG0 + 6 + nPf_cstr + j] = 0;
             }
@@ -452,6 +451,13 @@ int C_prb_RR_HMS::setup_worph(double *Xguess){
         else{
             cout << " opz.obj_func_switch = " << opz.obj_func_switch << " non definito" << endl;
         } 
+
+        // DT constraints
+        int nPf_cstr = 0;
+        if(opz.E_Pf_constraint) nPf_cstr = 6;
+        if(opz.Fixed_DT){
+            opt.GL[iG0 + 6 + nPf_cstr + nSeg + 1] = opt.GU[iG0 + 6 + nPf_cstr + nSeg + 1] = 0;
+        }
     }
     par.FGtogether = true;
     par.UserDF = false;
@@ -486,9 +492,11 @@ void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj){
     F = 0;
     
     int nSeg;
-    double tfin, Np1L, dt;
-    for (int iLeg = 0; iLeg < nLeg; iLeg++){
+    double tfin, Np1L, dt, T;
+    for(int iLeg = 0; iLeg < nLeg; iLeg++){
         nSeg = nSeg_vector[iLeg];
+        tfin = tf_vector[iLeg];
+        T = 0;
         vector<double> v_DVnorm(nSeg + 1); 
         vector<double> v_DVstd(nSeg + 1);
 
@@ -505,7 +513,7 @@ void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj){
         }        
         else{
             P_km = P_kp;
-            if (opz.v_RV_free) v_km = v_kp;
+            if(opz.v_RV_free) v_km = v_kp;
         }                          
         DV_k = Eigen::Map<Vector3d>(X + iX + 1 + 6, 3);      
         KK_k = Eigen::Map<MatrixXd>(X + iX + 1 + 6 + 3, 3, 6); 
@@ -528,6 +536,7 @@ void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj){
             v_DVstd[0] = sqrt(covDV.eigenvalues().real().maxCoeff()); //max autovalore
 
         for (int iSeg = 0; iSeg < nSeg; iSeg++){
+            T += dt;
             // ottenuti per propagazione
             if (opz.cov_propagation_mode == 0)
                 propagate_kepler_UT(r_km, v_kp, P_kp, dt, 1., Qd_k, r_k1_hat, v_k1m_hat, P_k1m_hat);
@@ -542,9 +551,9 @@ void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj){
             Eigen::Map<Vector3d> DV_k1(X + i0 + 1 + 6, 3);        
             Eigen::Map<MatrixXd> KK_k1(X + i0 + 1 + 6 + 3, 3, 6);        
             
-            int iG0 = nRes*accumulate(nSeg_vector.begin(), nSeg_vector.begin() + iLeg, 0.) + 6*iLeg + Np1L + iSeg*(nRes);
-            //int iG0 = iLeg*(nRes*nSeg + 6 + nSeg + 1) + nRes*(iSeg); 
-            if (opz.E_Pf_constraint) iG0 += 6*iLeg;
+            int iG0 = (nRes + 1)*Np1L + iSeg*(nRes);
+            if(opz.E_Pf_constraint) iG0 += 6*iLeg;
+            if(opz.Fixed_DT) iG0 += iLeg;
 
             for (int j = 0; j < 3; j++)
                 G[iG0 + j] = r_k1m[j] - r_k1_hat[j];
@@ -581,8 +590,6 @@ void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj){
         F += DVtot + DVstd_tot * kstd;   
 
         // constraints
-        //
-        
         if (iLeg == nLeg - 1){
             r_G = opz.rf;
             v_G = opz.vf;
@@ -593,24 +600,10 @@ void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj){
         }
         
         // 1.1) Stato medio al tempo finale
-        int iG0 = nRes*accumulate(nSeg_vector.begin(), nSeg_vector.begin() + iLeg, 0.) + 6*iLeg + Np1L + nSeg*(nRes);
-        //int iG0 = iLeg*(nRes*nSeg + 6 + nSeg + 1) + nRes*nSeg;
+        int iG0 = (nRes + 1)*Np1L + nSeg*(nRes);
         if (opz.E_Pf_constraint) iG0 += 6*iLeg;
+        if(opz.Fixed_DT) iG0 += iLeg;
 
-        // if (iLeg == nLeg - 1){
-        //     for (int j=0; j<3; j++)
-        //         G[iG0 + j] = r_km[j] - r_G[j];
-
-        //     for (int j=0; j<3; j++)
-        //         G[iG0 + 3 +j] = v_kp[j] - v_G[j];
-        // }
-        // else{
-        //     for (int j=0; j<3; j++)
-        //         G[iG0 + j] = r_km[j] - r_G[j];
-
-        //     for (int j=0; j<3; j++)
-        //         G[iG0 + 3 +j] = 0;
-        // }
         if ((opz.v_RV_free)&&(iLeg < nLeg - 1)){
             for (int j=0; j<3; j++)
                 G[iG0 + j] = r_km[j] - r_G[j];
@@ -651,14 +644,20 @@ void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj){
         }
 
         // 1.3) DV_cstr
-        if (opz.E_DV_cstr){
+        if(opz.E_DV_cstr){
             int nPf_cstr = 0;
-            if (opz.E_Pf_constraint) nPf_cstr = 6;
+            if(opz.E_Pf_constraint) nPf_cstr = 6;
 
             for (int k = 0; k < nSeg + 1; k++){
                 // G[iG0+6+nPf_cstr + k] = v_DVnorm[k] + kstd*v_DVstd[k] - 1*opz.DVtot_max/(nSeg+1); 
-                G[iG0+6+nPf_cstr + k] = v_DVnorm[k] + kstd*v_DVstd[k] - 1*opz.DVtot_single_max; 
+                G[iG0 + 6 + nPf_cstr + k] = v_DVnorm[k] + kstd*v_DVstd[k] - 1*opz.DVtot_single_max; 
             }
+        }
+
+        int nPf_cstr = 0;
+        if(opz.E_Pf_constraint) nPf_cstr = 6;
+        if(opz.Fixed_DT){
+            G[iG0 + 6 + nPf_cstr + nSeg + 1] = T - tfin;
         }
     }
     F *= ScaleObj;
@@ -672,7 +671,7 @@ void test_RR_HMS(){
     //
     string opz_dir = "../data/RR/";
     //string fname_opz = opz_dir + "opz-rr-EarthMars_test.yaml"; 
-    string fname_opz = opz_dir + "opz-rr-AFC.yaml"; 
+    string fname_opz = opz_dir + "opz-rr-AFC1.yaml"; 
 
     C_prb_RR_HMS prb(fname_opz);
     

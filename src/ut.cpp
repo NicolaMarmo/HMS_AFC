@@ -171,8 +171,7 @@ inline MatrixXd GGravity(const Vector3d& r, const double amu)
  *      nSub =numero di divisioni interne nella propagazione
  **/
 void propagate_kepler_STM(Vector3d r0_mean, Vector3d v0_mean, MatrixXd P0, double dt_sec, double amu, MatrixXd Qd_k,
-    Vector3d& r1_mean, Vector3d& v1_mean, MatrixXd& P1, int nSub)
-{
+    Vector3d& r1_mean, Vector3d& v1_mean, MatrixXd& P1, int nSub){
 
     const int n=6;
 
@@ -203,8 +202,7 @@ void propagate_kepler_STM(Vector3d r0_mean, Vector3d v0_mean, MatrixXd P0, doubl
     Vector3d _v0 = v0_mean;
     MatrixXd _P0 =P0;
     double dt_seg = dt_sec/double(nSub);
-    for (int k=0; k<nSub; k++)
-    {
+    for (int k=0; k<nSub; k++){
 
         propagateKEP_U(_r0, _v0, dt_seg, amu, r1_mean, v1_mean);
    
@@ -247,4 +245,20 @@ void propagate_kepler_STM(Vector3d r0_mean, Vector3d v0_mean, MatrixXd P0, doubl
     // } 
     // // cout << "-----" << endl;
 
-}                    
+}             
+
+void Pf_STM(Vector3d r0, Vector3d v0, MatrixXd P0, double dt_sec, double mu, MatrixXd Qd_k, 
+            MatrixXd& Pf){
+                
+    VectorXd YY_ODE(6), x0(42);
+    MatrixXd PHIf_ODE(6, 6);
+    x0 << r0, v0, MatrixXd::Identity(6, 6).reshaped();
+    C_simulazione_ODE sim_ODE(42, 2, 1, 1e-14, 1e-14);
+    sim_ODE.SetY0_Sim(x0);
+    EoM_Kepler_ODE_STM EoM_ODE(1., 2*M_PI);
+    sim_ODE.Start_Sim(EoM_ODE);
+    YY_ODE = sim_ODE.Y.rightCols(1);
+    PHIf_ODE = YY_ODE.tail(36).reshaped(6, 6);
+
+    Pf = PHIf_ODE.transpose() * P0 * PHIf_ODE + Qd_k;
+}   

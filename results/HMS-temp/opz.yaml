@@ -13,6 +13,7 @@ solver:
   E_navigation_std: false
   v_RV_free: true
   DV_RV_double: false
+  Fixed_DT: true
   cov_collocation_mode: 0
   cov_propagation:
     mode: 1

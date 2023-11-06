@@ -1,0 +1,56 @@
+solver:
+  nSeg1: 4                       # n. di segmenti                                             <----
+  nSeg2: 3                      
+  nLeg: 2
+  planar: false                   #
+  cov_collocation_mode: 0         #1 = tiangolare (L), 2 = Simmetrica (S), 3 = Xcorr  
+  E_uniform_time: true            # true | false
+  E_rendezvous:   true            # true | false
+  sf: 1
+  
+  DVstd_model: 1                  # 0 = sqrt(tr( cov(DV) )) 
+                                  # 1 = max eigval
+  cov_propagation:
+    mode: 1  # 1                  # 0 = UT, 1 = STM                                            <----
+    nSub: 10  # 10                 # Split the propagation into "nSub" arcs                     <----
+  
+  objective: 1                    # "1 = min DV, cstr Pf | 2 = min tr(Pf), cstr DV             (ToDO) solo 1 è implementato
+  E_DV_cstr: true                 # true | false                                               <----    
+  E_Pf_constraint: false           # true | false                                               <----    
+  objective_std: false            # true | false                                               <----    
+  E_nav_std: false                # true | false                                               <----     
+  v_RV_free: true                # true | false                                               <---- 
+  DV_RV_double: false             # true | false                                               <----     
+  Fixed_DT: true               # true | false                                               <----     
+
+mission:
+  output_folder: "AFC7/"
+  firstguess_folder: "AFC6/" # type "d" for default folder "results/HMS-temp", otherwise type a folder in "dbSOL/"
+  muPrimary: 132712440018                     # [km^3/s^2]
+  r0: [-1.036860803762830E+08, -1.097048551347926E+08, 8.148040847457945E+03]   
+  v0: [2.115894868015005E+01, -2.056183496280147E+01, 1.289253233919929E-03] 
+  r0_RV1: [-1.261052092139849E+08, 1.116214642463102E+08, -7.045953307462998E+06]   
+  v0_RV1: [-1.620615021768981E+01, -1.795591023797451E+01, -8.504311810030547E-01]
+  rRV1: [3.329388362943991E+07, 1.372378158403601E+08, 1.575323843425058E+06]  
+  vRV1: [-2.625980912703321E+01, 1.410043883151945E+01, -1.451746118898613E+00]   
+  rf: [-1.027614395199000E+08, -1.106045305741505E+08, 7.609757003962994E+03] 
+  vf: [2.133568750922134E+01, -2.039795395973766E+01, 8.383063284247427E-04]
+
+  tfin1:  2.014400878020370e+07   # [s] 3.408052305789995e+07 1.211254019599998e+07
+  tfin2:  1.145824960768747e+07
+  DVtot_max: -1.                              # [km/s]  
+  DVtot_single_max: 0.04
+  
+  #questi sono valori sigma^2 
+  sigma_r0:     0.e-5   
+  sigma_v0:     0.e-6   
+  sigma_rf_des: 5.e-7     
+  sigma_vf_des: 5.e-8   
+  sigma_rRV:    5.e-8    
+  sigma_vRV:    5.e-7
+  Qd_r:         0.e-6    
+  Qd_v:         0.e-7     
+  Qd_level: 0 # 0: null, 1: small (1e-6, 1e-7), 2: medium (5e-6, 5e-7), 3: large (1e-5, 1e-6), 4: extra large (1e-4, 1e-5), 5: extra extra large (1e-3, 1e-4)
+
+  nav_sigma_r: 0.e-7  
+  nav_sigma_v: 0.e-8  

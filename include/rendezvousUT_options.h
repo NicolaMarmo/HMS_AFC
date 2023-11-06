@@ -53,6 +53,7 @@ public:
     // bool E_fakeUT;
     bool E_nav_std;
     bool objective_std;
+    bool Fixed_DT;
     int obj_func_switch;               // 0: energy, 1 = fuel;, 2 = min_trace_cov
     int DVstd_model;
 
