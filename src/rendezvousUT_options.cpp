@@ -28,7 +28,8 @@ Options_rendezvousUT_t::Options_rendezvousUT_t(const std::string &filename)
     E_nav_std = options_yaml["solver"]["E_nav_std"].as<bool>();
     v_RV_free = options_yaml["solver"]["v_RV_free"].as<bool>();
     DV_RV_double = options_yaml["solver"]["DV_RV_double"].as<bool>();
-    Fixed_DT = options_yaml["solver"]["Fixed_DT"].as<bool>();
+    Fixed_ToF_Leg = options_yaml["solver"]["Fixed_DT"].as<bool>();
+    Limited_ToF = options_yaml["solver"]["Limited_ToF"].as<bool>();
     
     objective_std= options_yaml["solver"]["objective_std"].as<bool>();
     cov_collocation_mode= options_yaml["solver"]["cov_collocation_mode"].as<int>();
@@ -57,24 +58,17 @@ Options_rendezvousUT_t::Options_rendezvousUT_t(const std::string &filename)
     nav_sigma_v =  options_yaml["mission"]["nav_sigma_v"].as<double>();
     
     // int n_r0_dim = options_yaml["mission"]["r0_dim"].size();
-    for (int i=0; i<3; i++)    
+    for(int i = 0; i < 3; i++){  
         r0(i) = options_yaml["mission"]["r0"][i].as<double>(); 
-    
-    for (int i=0; i<3; i++)    
-        v0(i) = options_yaml["mission"]["v0"][i].as<double>(); 
- 
-    for (int i=0; i<3; i++)    
+        v0(i) = options_yaml["mission"]["v0"][i].as<double>();
         rf(i) = options_yaml["mission"]["rf"][i].as<double>(); 
-    
-    for (int i=0; i<3; i++)    
         vf(i) = options_yaml["mission"]["vf"][i].as<double>(); 
-
-    for (int i=0; i<3; i++)    
         rRV(i) = options_yaml["mission"]["rRV1"][i].as<double>(); 
-    
-    for (int i=0; i<3; i++)    
         vRV(i) = options_yaml["mission"]["vRV1"][i].as<double>(); 
+    }
 
+    FB_Legs = options_yaml["mission"]["FB_Legs"].as<vector<int>>();
+    
     // Nondimensionalization
     rconv = r0.norm();
     vconv = sqrt(amu_dim/rconv);
@@ -83,7 +77,7 @@ Options_rendezvousUT_t::Options_rendezvousUT_t(const std::string &filename)
 
     int nSeg;
     double tfin;
-    string namenSeg, nametfin, namer, namev;
+    string namenSeg, nametfin, namer, namev, namerRV, namevRV;
     for(int i = 0; i < nLeg; i++){
         namenSeg = "nSeg" + std::to_string(i + 1);
         nametfin = "tfin" + std::to_string(i + 1);
@@ -91,28 +85,34 @@ Options_rendezvousUT_t::Options_rendezvousUT_t(const std::string &filename)
         nSeg =  options_yaml["solver"][namenSeg].as<int>();
         tfin =  options_yaml["mission"][nametfin].as<double>()/tconv;
 
-        if(i < nLeg - 1){
-            namer = "rRV" + std::to_string(i + 1);
-            namev = "vRV" + std::to_string(i + 1);
+        namer = "rRV" + std::to_string(i + 1);
+        namev = "vRV" + std::to_string(i + 1);
 
-            for (int i=0; i<3; i++){    
-                rRV(i) = options_yaml["mission"][namer][i].as<double>()/rconv; 
-                vRV(i) = options_yaml["mission"][namev][i].as<double>()/vconv;
-            }
+        namerRV = "r0_RV" + std::to_string(i + 1);
+        namevRV = "v0_RV" + std::to_string(i + 1);
+
+        for(int i = 0; i < 3; i++){    
+            rRV(i) = options_yaml["mission"][namer][i].as<double>()/rconv; 
+            vRV(i) = options_yaml["mission"][namev][i].as<double>()/vconv;
+
+            r0_RV(i) = options_yaml["mission"][namerRV][i].as<double>()/rconv;
+            v0_RV(i) = options_yaml["mission"][namevRV][i].as<double>()/vconv;
         }
-
+        
         nSeg_vector.push_back(nSeg);
 
         rRV_vector.push_back(rRV); 
         vRV_vector.push_back(vRV);
+        r0_RV_vector.push_back(r0_RV);
+        v0_RV_vector.push_back(v0_RV);
 
         tfin_vector.push_back(tfin);
     }
+    Max_ToF = options_yaml["mission"]["Max_ToF"].as<double>()/tconv;
 
     // double DVmax;   
     DVtot_max = options_yaml["mission"]["DVtot_max"].as<double>(); 
     DVtot_single_max = options_yaml["mission"]["DVtot_single_max"].as<double>();   // [km/s]
-    amrif = 1000; //kg
 
     r0 = r0/rconv;
     v0 = v0/vconv;
@@ -152,7 +152,7 @@ void Options_rendezvousUT_t::emit(const std::string &filename){
             out << YAML::Key << "E_navigation_std" << YAML::Value << E_nav_std;
             out << YAML::Key << "v_RV_free" << YAML::Value << v_RV_free;
             out << YAML::Key << "DV_RV_double" << YAML::Value << DV_RV_double;
-            out << YAML::Key << "Fixed_DT" << YAML::Value << Fixed_DT;
+            out << YAML::Key << "Fixed_DT" << YAML::Value << Fixed_ToF_Leg;
             out << YAML::Key << "cov_collocation_mode" << YAML::Value << cov_collocation_mode;
             out << YAML::Key << "cov_propagation";
             out << YAML::BeginMap;
@@ -175,10 +175,6 @@ void Options_rendezvousUT_t::emit(const std::string &filename){
             vector<double> vf_dim={vf[0]*vconv, vf(1)*vconv, vf(2)*vconv};
             vector<double> rRV_dim={rRV[0]*rconv, rRV(1)*rconv, rRV(2)*rconv};
             vector<double> vRV_dim={vRV[0]*vconv, vRV(1)*vconv, vRV(2)*vconv};
-            //vector<double> tf_vector_dim(nLeg);
-            // for (int i=0; i<nLeg; i++){
-            //     tf_vector_dim(i) = tf_vector[0]*tconv; 
-            // }
 
             out << YAML::Key << "r0_dim" << YAML::Value << r0_dim;
             out << YAML::Key << "v0_dim" << YAML::Value << v0_dim;

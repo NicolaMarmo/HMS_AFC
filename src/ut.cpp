@@ -92,8 +92,7 @@ void propagate_kepler_UT(Vector3d r0_mean, Vector3d v0_mean, MatrixXd P0, double
 }
 
 void propagate_kepler_UT_MS(Vector3d r0_mean, Vector3d v0_mean, MatrixXd P0, double dt_sec, double mu, MatrixXd Qd_k,
-                        Vector3d& r1_mean, Vector3d& v1_mean, MatrixXd& P1)
-{
+                        Vector3d& r1_mean, Vector3d& v1_mean, MatrixXd& P1){
     // Q_k è il disturbo discreto addizionale
     int npar = 50;
 

@@ -42,8 +42,7 @@ class C_prb_RR_HMS
     double tf2;
 
     MatrixXd P0;
-    Vector3d r0, v0; 
-    Vector3d rf_des, vf_des;
+    Vector3d r0, v0, rf, vf; 
     Vector3d rRV, vRV;
     Vector3d r_G, v_G;
     Vector3d r0_X, v0_X; 
@@ -75,8 +74,7 @@ class C_prb_RR_HMS
     //double *tf_vector_p;
     vector<double> tf_vector;
     vector<int> nSeg_vector;
-    vector<Vector3d> rRV_vector;
-    vector<Vector3d> vRV_vector;
+    vector<Vector3d> rRV_vector, vRV_vector, r0_RV_vector, v0_RV_vector;
     
     const int nRes = 6;     //n. di equazioni di continuità
     const int nVars = 1 + 6 + 3 + 18; // YP [nVars x nSeg]    

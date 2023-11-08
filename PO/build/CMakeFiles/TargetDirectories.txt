@@ -1,3 +1,0 @@
-/home/spectral01/MARMO/DESTINY+/PO/build/CMakeFiles/PO.dir
-/home/spectral01/MARMO/DESTINY+/PO/build/CMakeFiles/edit_cache.dir
-/home/spectral01/MARMO/DESTINY+/PO/build/CMakeFiles/rebuild_cache.dir
