@@ -6,14 +6,6 @@ Options_rendezvousUT_t::Options_rendezvousUT_t(const std::string &filename)
     // Read YAML file
     options_yaml = YAML::LoadFile(filename);
 
-    //--------------------------------------------------//
-    // Parsing
-    //
-
-    // Solver                     // Population size
-    //nSeg =  options_yaml["solver"]["nSeg"].as<int>();
-    nSeg1 =  options_yaml["solver"]["nSeg1"].as<int>();
-    nSeg2 =  options_yaml["solver"]["nSeg2"].as<int>();
     nLeg =  options_yaml["solver"]["nLeg"].as<int>();
     sf =  options_yaml["solver"]["sf"].as<int>();
     planar =  options_yaml["solver"]["planar"].as<bool>();
@@ -63,8 +55,6 @@ Options_rendezvousUT_t::Options_rendezvousUT_t(const std::string &filename)
         v0(i) = options_yaml["mission"]["v0"][i].as<double>();
         rf(i) = options_yaml["mission"]["rf"][i].as<double>(); 
         vf(i) = options_yaml["mission"]["vf"][i].as<double>(); 
-        rRV(i) = options_yaml["mission"]["rRV1"][i].as<double>(); 
-        vRV(i) = options_yaml["mission"]["vRV1"][i].as<double>(); 
     }
 
     FB_Legs = options_yaml["mission"]["FB_Legs"].as<vector<int>>();
@@ -85,20 +75,13 @@ Options_rendezvousUT_t::Options_rendezvousUT_t(const std::string &filename)
         nSeg =  options_yaml["solver"][namenSeg].as<int>();
         tfin =  options_yaml["mission"][nametfin].as<double>()/tconv;
 
-        namer = "rRV" + std::to_string(i + 1);
-        namev = "vRV" + std::to_string(i + 1);
-
         namerRV = "r0_RV" + std::to_string(i + 1);
         namevRV = "v0_RV" + std::to_string(i + 1);
 
         for(int i = 0; i < 3; i++){    
-            rRV(i) = options_yaml["mission"][namer][i].as<double>()/rconv; 
-            vRV(i) = options_yaml["mission"][namev][i].as<double>()/vconv;
-
             r0_RV(i) = options_yaml["mission"][namerRV][i].as<double>()/rconv;
             v0_RV(i) = options_yaml["mission"][namevRV][i].as<double>()/vconv;
         }
-        
         nSeg_vector.push_back(nSeg);
 
         rRV_vector.push_back(rRV); 
@@ -118,10 +101,6 @@ Options_rendezvousUT_t::Options_rendezvousUT_t(const std::string &filename)
     v0 = v0/vconv;
     rf = rf/rconv;
     vf = vf/vconv;
-    // rRV = rRV/rconv;
-    // vRV = vRV/vconv;
-    // tfin1 = tfin1/tconv;
-    // tfin2 = tfin2/tconv;
 
     DVtot_max /= vconv;
     //DVtot_single_max /= vconv;
@@ -132,13 +111,19 @@ Options_rendezvousUT_t::Options_rendezvousUT_t(const std::string &filename)
 void Options_rendezvousUT_t::emit(const std::string &filename){
 
     YAML::Emitter out;
+    string namenSeg, nametfin;
 
     out << YAML::BeginMap;
         out << YAML::Key << "solver";
         out << YAML::BeginMap;
-            //out << YAML::Key << "nSeg" << YAML::Value << nSeg;
-            out << YAML::Key << "nSeg1" << YAML::Value << nSeg1;
-            out << YAML::Key << "nSeg2" << YAML::Value << nSeg2;
+        for(int i = 0; i < nLeg; i++){
+            namenSeg = "nSeg" + std::to_string(i + 1);
+            nametfin = "tfin" + std::to_string(i + 1);
+
+            out << YAML::Key << namenSeg << YAML::Value << nSeg_vector[i];
+            out << YAML::Key << nametfin << YAML::Value << tfin_vector[i];
+        }
+
             out << YAML::Key << "nLeg" << YAML::Value << nLeg;
             out << YAML::Key << "planar" << YAML::Value << planar;
             out << YAML::Key << "E_Pf_constraint" << YAML::Value << E_Pf_constraint;
@@ -169,22 +154,15 @@ void Options_rendezvousUT_t::emit(const std::string &filename){
             out << YAML::Key << "muPrimary" << YAML::Value << amu_dim;
             out << YAML::Newline << YAML::Newline;
 
-            vector<double> r0_dim={r0[0]*rconv, r0(1)*rconv, r0(2)*rconv};
-            vector<double> v0_dim={v0[0]*vconv, v0(1)*vconv, v0(2)*vconv};
-            vector<double> rf_dim={rf[0]*rconv, rf(1)*rconv, rf(2)*rconv};
-            vector<double> vf_dim={vf[0]*vconv, vf(1)*vconv, vf(2)*vconv};
-            vector<double> rRV_dim={rRV[0]*rconv, rRV(1)*rconv, rRV(2)*rconv};
-            vector<double> vRV_dim={vRV[0]*vconv, vRV(1)*vconv, vRV(2)*vconv};
+            vector<double> r0_dim = {r0[0]*rconv, r0(1)*rconv, r0(2)*rconv};
+            vector<double> v0_dim = {v0[0]*vconv, v0(1)*vconv, v0(2)*vconv};
+            vector<double> rf_dim = {rf[0]*rconv, rf(1)*rconv, rf(2)*rconv};
+            vector<double> vf_dim = {vf[0]*vconv, vf(1)*vconv, vf(2)*vconv};
 
             out << YAML::Key << "r0_dim" << YAML::Value << r0_dim;
             out << YAML::Key << "v0_dim" << YAML::Value << v0_dim;
             out << YAML::Key << "rf_dim" << YAML::Value << rf_dim;
             out << YAML::Key << "vf_dim" << YAML::Value << vf_dim;
-            out << YAML::Key << "rRV" << YAML::Value << rRV_dim;
-            out << YAML::Key << "vRV" << YAML::Value << vRV_dim;
-            out << YAML::Key << "tfin1" << YAML::Value << tfin1;
-            out << YAML::Key << "tfin2" << YAML::Value << tfin2;
-            //out << YAML::Key << "tf_vector" << YAML::Value << tf_vector;
             out << YAML::Key << "DVtot_max" << YAML::Value << DVtot_max;
             out << YAML::Key << "DVtot_single_max" << YAML::Value << DVtot_single_max;
             

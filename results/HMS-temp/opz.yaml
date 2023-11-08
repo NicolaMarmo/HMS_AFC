@@ -1,7 +1,13 @@
 solver:
   nSeg1: 3
+  tfin1: 3.956865075167581
   nSeg2: 3
-  nLeg: 2
+  tfin2: 2.250731132512577
+  nSeg3: 3
+  tfin3: 4.723780505383702
+  nSeg4: 3
+  tfin4: 7.674143742696809
+  nLeg: 4
   planar: false
   E_Pf_constraint: false
   E_uniform_time: true
@@ -13,7 +19,7 @@ solver:
   E_navigation_std: false
   v_RV_free: true
   DV_RV_double: false
-  Fixed_DT: false
+  Fixed_DT: true
   cov_collocation_mode: 0
   cov_propagation:
     mode: 1
@@ -40,18 +46,8 @@ mission:
     - 21.33568750922134
     - -20.39795395973766
     - 0.0008383063284247427
-  rRV:
-    - -102761439.5199
-    - -110604530.5741505
-    - 7609.757003962994
-  vRV:
-    - 21.33568750922134
-    - -20.39795395973766
-    - 0.0008383063284247427
-  tfin1: 20144008.7802037
-  tfin2: 11458249.60768747
   DVtot_max: -0.03372570281860159
-  DVtot_single_max: 0.1
+  DVtot_single_max: 0.2
 
   sigma_r0: 0
   sigma_v0: 0
@@ -59,8 +55,8 @@ mission:
   sigma_vf_des: 5e-08
   sigma_rRV: 5e-08
   sigma_vRV: 5e-07
-  Qd_r: 0
-  Qd_v: 0
+  Qd_r: -nan
+  Qd_v: -nan
   Qd_level: 0
   nav_sigma_r: 0
   nav_sigma_v: 0

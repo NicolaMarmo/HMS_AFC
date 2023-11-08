@@ -115,8 +115,6 @@ C_prb_RR_HMS::C_prb_RR_HMS(string fname_opz){
 
     tf_vector = opz.tfin_vector;
     nSeg_vector = opz.nSeg_vector;
-    rRV_vector = opz.rRV_vector;
-    vRV_vector = opz.vRV_vector;
     r0_RV_vector = opz.r0_RV_vector;
     v0_RV_vector = opz.v0_RV_vector;
     r0 = opz.r0;
@@ -292,7 +290,7 @@ int C_prb_RR_HMS::setup_worph(double *Xguess){
             //int i0 = iLeg*(nSeg+1)*nVars + iSeg*nVars;
 
             if(iSeg < nSeg){ //DT
-                opt.XL[i0] = 0.5*tfin/nSeg;
+                opt.XL[i0] = 0.25*tfin/nSeg;
                 opt.XU[i0] = tfin;
             }
             else{
@@ -358,22 +356,10 @@ int C_prb_RR_HMS::setup_worph(double *Xguess){
         }
 
         // Condizioni iniziali assegnate
-        if (iLeg == 0){
-            r0_X = r0;
-            v0_X = v0;
-        }
-        else{
-            r0_X = rRV_vector[iLeg - 1];
-            v0_X = vRV_vector[iLeg - 1];
-        }
-        int i0 = nVars*Np1L;
-        // for (int j = 0; j < 3; j++){
-        //     opt.XL[i0 + 1 + j] = opt.XU[i0 + 1 + j] = r0_X(j);
-        // }
-        if((opz.v_RV_free == false)||(iLeg == 0)){                                 
+        if (iLeg == 0){                          
             for (int j = 0; j < 3; j++){
-                opt.XL[i0 + 1 + j] = opt.XU[i0 + 1 + j] = r0_X(j);
-                opt.XL[i0 + 1 + 3 + j] = opt.XU[i0 + 1 + 3 + j] = v0_X(j);
+                opt.XL[1 + j] = opt.XU[1 + j] = r0(j);
+                opt.XL[1 + 3 + j] = opt.XU[1 + 3 + j] = v0(j);
             }  
         }
 
@@ -554,37 +540,21 @@ void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj){
         //     F = DVtot;
         F += DVtot + DVstd_tot * kstd;   
 
-        // constraints
-        // if (iLeg == nLeg - 1){
-        //     r_G = rf;
-        //     v_G = vf;
-        // }
-        // else{
-        //     propagateKEP_U(r0_RV_vector[iLeg], v0_RV_vector[iLeg], T, 1, r_G, v_G);
-        //     // r_G = rRV_vector[iLeg];
-        //     // v_G = vRV_vector[iLeg];
-        // }
         propagateKEP_U(r0_RV_vector[iLeg], v0_RV_vector[iLeg], ToF, 1, r_G, v_G);
 
-        
         // 1.1) Stato medio al tempo finale
         int iG0 = (nRes + 1)*Np1L + nSeg*(nRes);
         if(opz.E_Pf_constraint) iG0 += 6*iLeg;
         if(opz.Fixed_ToF_Leg) iG0 += iLeg;
 
-        if ((opz.v_RV_free)&&(iLeg < nLeg - 1)){
-            for (int j=0; j<3; j++)
-                G[iG0 + j] = r_km[j] - r_G[j];
-
-            for (int j=0; j<3; j++)
-                G[iG0 + 3 +j] = 0;
+        if (iLeg == nLeg - 1){
+            for(int j = 0; j < 3; j++) G[iG0 + j] = r_km[j] - r_G[j];
+            for(int j = 0; j < 3; j++) G[iG0 + 3 + j] = v_kp[j] - v_G[j];
+            // G[iG0 + 3 + j] = v_kp[j] - v_G[j];
         }
         else{
-            for (int j=0; j<3; j++)
-                G[iG0 + j] = r_km[j] - r_G[j];
-
-            for (int j=0; j<3; j++)
-                G[iG0 + 3 +j] = v_kp[j] - v_G[j];
+            for(int j = 0; j < 3; j++) G[iG0 + j] = r_km[j] - r_G[j];
+            for(int j = 0; j < 3; j++) G[iG0 + 3 + j] = 0;
         }
 
         // 1.2) Covarianza al tempo finale
@@ -700,6 +670,7 @@ void test_RR_HMS(){
 
     ofstream trajEfile("../results/HMS-temp/trajEfile.dat");
     ofstream trajRV1file("../results/HMS-temp/trajRV1file.dat");
+    ofstream trajRV3file("../results/HMS-temp/trajRV3file.dat");
     string fname_savings = "../results/HMS-temp/opt_X.dat";
     string out_opz("../results/HMS-temp/opz.yaml");
     double F, FLeg, dt, ToF, ToF_Leg, tfin;
@@ -710,8 +681,8 @@ void test_RR_HMS(){
     Vector3d r_k, v_km, r_k1, v_k1m, v_kp, DV_i;
     MatrixXd P_km(6, 6), P_k1m(6, 6), P_kp(6, 6), Qd_k(6, 6), RR_k(6, 6), cov_DV_i(6, 6), KK_i(3, 6), KKaug_i(6, 6);
 
-    vector<double> v_DVnorm, v_DVstd;
-    C_KeplerMultiArc trajE, trajRV1;
+    vector<double> v_DVnorm, v_DVstd, ToF_par;
+    C_KeplerMultiArc trajE, trajRV1, trajRV3;
 
     for(int iLeg = 0; iLeg < nLeg; iLeg++){
         ToF_Leg = 0;
@@ -729,7 +700,6 @@ void test_RR_HMS(){
             P_km = prb.P0;
         }
         else{
-            // r_k = prb.rRV_vector[iLeg - 1];
             r_k = r_k1;
             v_km = v_kp;
             P_km = P_kp;
@@ -808,9 +778,7 @@ void test_RR_HMS(){
             ToF += dt;
             ToF_Leg += dt;
         }
-        trajRV1.add_keplerArc(C_KeplerArc(prb.r0_RV_vector[0], prb.v0_RV_vector[0], 0, ToF));
-        trajRV1.print(trajRV1file, 200);
-        trajRV1file.close();
+        ToF_par.push_back(ToF_Leg);
 
         out_sommario << P_km.block(0, 0, 3, 3).eigenvalues().real().transpose() << endl;
         out_sommario << P_km.block(3, 3, 3, 3).eigenvalues().real().transpose() << endl;
@@ -848,6 +816,14 @@ void test_RR_HMS(){
     trajE.print(trajEfile, 200);
     trajEfile.close();
 
+    trajRV1.add_keplerArc(C_KeplerArc(prb.r0_RV_vector[0], prb.v0_RV_vector[0], 0, accumulate(ToF_par.begin(), ToF_par.begin() + 1, 0.)));
+    trajRV1.print(trajRV1file, 200);
+    trajRV1file.close();
+
+    trajRV3.add_keplerArc(C_KeplerArc(prb.r0_RV_vector[2], prb.v0_RV_vector[2], 0, accumulate(ToF_par.begin(), ToF_par.begin() + 2, 0.)));
+    trajRV3.print(trajRV3file, 200);
+    trajRV3file.close();
+
     // Save YP to Disk
     prb.save_sol(fname_savings);
     prb.opz.emit(out_opz);
@@ -858,12 +834,11 @@ void test_RR_HMS(){
     //cout << "Copy solution in dbSOL? (S/n)" << endl;
     //cin >> ans;
     if (ans.compare("S") == 0 || ans.compare("s") == 0){
-        std::ifstream if_a("../results/HMS-temp/fullsol1.dat", std::ios_base::binary);
-        std::ifstream if_b("../results/HMS-temp/fullsol2.dat", std::ios_base::binary);
-        std::ifstream if_c("../results/HMS-temp/fullsol3.dat", std::ios_base::binary);
-        std::ofstream of("../results/HMS-temp/fullsol.dat", std::ios_base::binary);
-
-        of << if_a.rdbuf() << if_b.rdbuf() << if_c.rdbuf();
+        ofstream of("../results/HMS-temp/fullsol.dat", ios_base::binary);
+        for(int i; i < nLeg; i++){
+            ifstream if_a("../results/HMS-temp/fullsol" + to_string(i + 1) + ".dat", ios_base::binary);
+            of << if_a.rdbuf();
+        }
 
         string cmd;
         cmd = "mkdir -p ../dbSOL/" + prb.opz.output_folder; system(cmd.c_str()); //cout << cmd << endl;

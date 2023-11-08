@@ -65,8 +65,6 @@ class C_prb_RR_HMS
 
     // opzioni
     int nSeg;
-    int nSeg1;       // n. di segmenti in cui è divisa la traiettoria
-    int nSeg2;
     int nLeg;
     int sf;
     const int Pdim = 6;
@@ -74,7 +72,7 @@ class C_prb_RR_HMS
     //double *tf_vector_p;
     vector<double> tf_vector;
     vector<int> nSeg_vector;
-    vector<Vector3d> rRV_vector, vRV_vector, r0_RV_vector, v0_RV_vector;
+    vector<Vector3d> r0_RV_vector, v0_RV_vector;
     
     const int nRes = 6;     //n. di equazioni di continuità
     const int nVars = 1 + 6 + 3 + 18; // YP [nVars x nSeg]    

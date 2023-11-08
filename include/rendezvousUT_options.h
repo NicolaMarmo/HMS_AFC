@@ -29,8 +29,7 @@ public:
     
 // Solver
     //int nSeg;
-    int nSeg1;                    
-    int nSeg2;
+    int nSeg1, nSeg2, nSeg3;                    
     int nLeg;
 
     int sf;
@@ -65,8 +64,7 @@ public:
     int cov_propagation_nSub;
     
     double amu_dim;
-    double tfin1;
-    double tfin2;
+    double tfin1, tfin2, tfin3;
     double Max_ToF;
 
     Vector3d r0, v0, rf, vf, rRV, vRV, r0_RV, v0_RV;
