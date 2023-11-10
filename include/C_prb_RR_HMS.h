@@ -210,17 +210,13 @@ class C_prb_RR_HMS
             //cout << "Salvare la soluzione?" << endl;
             //cin >> ans;
         }
-        if (ans.compare("S") == 0 || ans.compare("s") == 0)
-        {
+        if (ans.compare("S") == 0 || ans.compare("s") == 0){
             ofstream out_fullsol(fname);
-            for (int iLeg=0; iLeg < nLeg; iLeg++){
+            for(int iLeg = 0; iLeg < nLeg; iLeg++){
                 nSeg = nSeg_vector[iLeg];
-                for (int k=0; k<nSeg+1; k++) // Warning!
-                {
+                for(int k = 0; k < nSeg + 1; k++){
                     int i0 = nVars*(accumulate(nSeg_vector.begin(), nSeg_vector.begin() + iLeg, 0.) + iLeg) + k*nVars;
-                    //int i0 = iLeg*(nSeg+1)*nVars + k*nVars;
-                    for (int j = 0; j < nVars; j++)
-                        out_fullsol << fixed << setw(14) << setprecision(8) << opt.X[i0 + j] << " ";
+                    for (int j = 0; j < nVars; j++) out_fullsol << fixed << setw(14) << setprecision(8) << opt.X[i0 + j] << " ";
                     out_fullsol << endl;
                 }
                 //out_fullsol << endl << endl;

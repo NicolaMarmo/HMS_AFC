@@ -21,6 +21,8 @@ chi_sq = sqrt(5.991)
 set term pngcairo enhanced color font "Arial-Bold, 20"  size 1600, 1600 #lw 3
 set output "results/HMS-temp/traj.png"
 set size ratio -1 # axis equal
+set pointsize 0.5
+set grid lt 1 lw 0.1 lc "black"
 set xrange [-1.8:1.8]
 set yrange [-1.8:1.8]
 
@@ -50,6 +52,7 @@ plot trajE using 2:3 with l notitle lw 2 lc "blue", \
      filename2 using 2:3 with l lc "dark-green" lw 2 notitle, \
      filename3 using 2:3 with l lc "dark-red" lw 2 notitle, \
      filename4 using 2:3 with l lc "orange" lw 2 notitle, \
+     filename1 using 2:3 every ::0::0 with points lc 'dark-magenta' pt 6 lw 3 ps 3 notitle, \
      filename2 using 2:3 every ::N-1::N-1 with points lc 'dark-green' pt 2 lw 3 ps 3 notitle, \
      filename4 using 2:3 every ::O-1::O-1 with points lc 'orange' pt 2 lw 3 ps 3 notitle, \
      fileDVs1 using 2:3:($5)*scalaV:($6)*scalaV with vectors filled head lc "dark-magenta" lw 4 notitle, \

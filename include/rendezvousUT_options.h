@@ -43,7 +43,6 @@ public:
 // Mission Switch
     string output_folder;
     string firstguess_folder;
-    bool planar;
     bool E_Pf_constraint;
     bool E_DV_cstr;
     bool E_uniform_time;
@@ -63,9 +62,11 @@ public:
     int cov_propagation_mode;
     int cov_propagation_nSub;
     
-    double amu_dim;
+    double amu_dim, mu_FB;
     double tfin1, tfin2, tfin3;
     double Max_ToF;
+
+    double r_min;
 
     Vector3d r0, v0, rf, vf, rRV, vRV, r0_RV, v0_RV;
 

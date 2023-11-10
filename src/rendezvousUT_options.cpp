@@ -1,14 +1,12 @@
 #include "../include/rendezvousUT_options.h"
 
 
-Options_rendezvousUT_t::Options_rendezvousUT_t(const std::string &filename)
-{
+Options_rendezvousUT_t::Options_rendezvousUT_t(const std::string &filename){
     // Read YAML file
     options_yaml = YAML::LoadFile(filename);
 
     nLeg =  options_yaml["solver"]["nLeg"].as<int>();
     sf =  options_yaml["solver"]["sf"].as<int>();
-    planar =  options_yaml["solver"]["planar"].as<bool>();
     E_Pf_constraint =  options_yaml["solver"]["E_Pf_constraint"].as<bool>();
     E_DV_cstr =  options_yaml["solver"]["E_DV_cstr"].as<bool>();
     E_uniform_time =  options_yaml["solver"]["E_uniform_time"].as<bool>();
@@ -20,7 +18,7 @@ Options_rendezvousUT_t::Options_rendezvousUT_t(const std::string &filename)
     E_nav_std = options_yaml["solver"]["E_nav_std"].as<bool>();
     v_RV_free = options_yaml["solver"]["v_RV_free"].as<bool>();
     DV_RV_double = options_yaml["solver"]["DV_RV_double"].as<bool>();
-    Fixed_ToF_Leg = options_yaml["solver"]["Fixed_DT"].as<bool>();
+    Fixed_ToF_Leg = options_yaml["solver"]["Fixed_ToF_Leg"].as<bool>();
     Limited_ToF = options_yaml["solver"]["Limited_ToF"].as<bool>();
     
     objective_std= options_yaml["solver"]["objective_std"].as<bool>();
@@ -32,8 +30,7 @@ Options_rendezvousUT_t::Options_rendezvousUT_t(const std::string &filename)
     output_folder = options_yaml["mission"]["output_folder"].as<string>();
     firstguess_folder = options_yaml["mission"]["firstguess_folder"].as<string>();
     amu_dim = options_yaml["mission"]["muPrimary"].as<double>();
-    tfin1 =  options_yaml["mission"]["tfin1"].as<double>();
-    tfin2 =  options_yaml["mission"]["tfin2"].as<double>();
+    mu_FB = options_yaml["mission"]["mu_FB"].as<double>();
 
     sigma_r0 =  options_yaml["mission"]["sigma_r0"].as<double>();
     sigma_v0 =  options_yaml["mission"]["sigma_v0"].as<double>();
@@ -92,6 +89,7 @@ Options_rendezvousUT_t::Options_rendezvousUT_t(const std::string &filename)
         tfin_vector.push_back(tfin);
     }
     Max_ToF = options_yaml["mission"]["Max_ToF"].as<double>()/tconv;
+    r_min = options_yaml["mission"]["r_min"].as<double>();
 
     // double DVmax;   
     DVtot_max = options_yaml["mission"]["DVtot_max"].as<double>(); 
@@ -106,8 +104,6 @@ Options_rendezvousUT_t::Options_rendezvousUT_t(const std::string &filename)
     //DVtot_single_max /= vconv;
 }
 
-
- 
 void Options_rendezvousUT_t::emit(const std::string &filename){
 
     YAML::Emitter out;
@@ -125,7 +121,6 @@ void Options_rendezvousUT_t::emit(const std::string &filename){
         }
 
             out << YAML::Key << "nLeg" << YAML::Value << nLeg;
-            out << YAML::Key << "planar" << YAML::Value << planar;
             out << YAML::Key << "E_Pf_constraint" << YAML::Value << E_Pf_constraint;
             out << YAML::Key << "E_uniform_time" << YAML::Value << E_uniform_time;
             out << YAML::Key << "E_rendezvous" << YAML::Value << E_rendezvous;
@@ -163,6 +158,8 @@ void Options_rendezvousUT_t::emit(const std::string &filename){
             out << YAML::Key << "v0_dim" << YAML::Value << v0_dim;
             out << YAML::Key << "rf_dim" << YAML::Value << rf_dim;
             out << YAML::Key << "vf_dim" << YAML::Value << vf_dim;
+            out << YAML::Key << "Max_ToF" << YAML::Value << Max_ToF;
+            out << YAML::Key << "r_min" << YAML::Value << r_min;
             out << YAML::Key << "DVtot_max" << YAML::Value << DVtot_max;
             out << YAML::Key << "DVtot_single_max" << YAML::Value << DVtot_single_max;
             

@@ -1,14 +1,13 @@
 solver:
-  nSeg1: 3
+  nSeg1: 2
   tfin1: 3.956865075167581
-  nSeg2: 3
+  nSeg2: 2
   tfin2: 2.250731132512577
-  nSeg3: 3
+  nSeg3: 2
   tfin3: 4.723780505383702
-  nSeg4: 3
+  nSeg4: 2
   tfin4: 7.674143742696809
   nLeg: 4
-  planar: false
   E_Pf_constraint: false
   E_uniform_time: true
   E_rendezvous: true
@@ -46,8 +45,10 @@ mission:
     - 21.33568750922134
     - -20.39795395973766
     - 0.0008383063284247427
+  Max_ToF: 18.60552045576067
+  r_min: 7000
   DVtot_max: -0.03372570281860159
-  DVtot_single_max: 0.2
+  DVtot_single_max: 0.8
 
   sigma_r0: 0
   sigma_v0: 0

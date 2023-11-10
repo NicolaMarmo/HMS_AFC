@@ -19,6 +19,11 @@ DV_2,
 ...
 DV_(nSeg + 1),
 
-(DT_Leg)
+(ToF_Leg)
 XnLeg
-(DT_ToF)
+
+norm(v_inf+_)
+r_p>=r_min
+XnFB
+
+(ToF)
