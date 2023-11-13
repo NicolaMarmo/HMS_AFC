@@ -32,7 +32,7 @@ public:
     int nSeg1, nSeg2, nSeg3;                    
     int nLeg;
 
-    int sf;
+    int sf, Max_iter;
 
     vector<int> nSeg_vector;
     vector<Vector3d> rRV_vector, vRV_vector, r0_RV_vector, v0_RV_vector;

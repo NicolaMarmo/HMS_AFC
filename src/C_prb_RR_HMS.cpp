@@ -188,8 +188,7 @@ int C_prb_RR_HMS::setup_worph(double *Xguess){
     * all parameters to default values (InitParams does this)
     */
     ReadParamsNoInit(&status, "../worhp.xml", &par);
-    if (status == DataError || status == InitError)
-    {
+    if (status == DataError || status == InitError){
         return EXIT_FAILURE;
     }
 
@@ -258,14 +257,14 @@ int C_prb_RR_HMS::setup_worph(double *Xguess){
     // bound generici 
     int nSeg, i0;
     double tfin, Np1L, LDV, UDV, LKK, UKK;
+    bool FB;
     for(int iLeg = 0; iLeg < nLeg; iLeg++){
         nSeg = nSeg_vector[iLeg];
         tfin = tf_vector[iLeg];
         Np1L = accumulate(nSeg_vector.begin(), nSeg_vector.begin() + iLeg, 0.) + iLeg;
 
-        bool FB = false;
-        auto it = find(opz.FB_Legs.begin(), opz.FB_Legs.end(), iLeg);
-        if(it != opz.FB_Legs.end()) FB = true;
+        FB = false;
+        FB = find(opz.FB_Legs.begin(), opz.FB_Legs.end(), iLeg) != end(opz.FB_Legs);
 
         for(int iSeg = 0; iSeg < nSeg + 1; iSeg++){
             i0 = nVars*Np1L + iSeg*nVars;
@@ -294,16 +293,21 @@ int C_prb_RR_HMS::setup_worph(double *Xguess){
                 opt.XL[i0 + 1 + 3 + j] = opt.XU[i0 + 1 + 3 + j] = 0;
                 }  
             }
-    
-            for(int j = 0; j < 3; j++){ //DV
+            
+            // DV
+            if((iSeg == nSeg)||((iSeg == 0)&&(!FB)&&(iLeg != 0))){
+                    LDV = UDV = .0;
+            }
+            else if((iSeg == 0)&&(FB||(iLeg == 0))){
+                LDV = -2;
+                UDV = +2;
+            }
+            else{
+                LDV = -opz.DVtot_single_max;
+                UDV = +opz.DVtot_single_max;
+            }
+            for(int j = 0; j < 3; j++){ 
                 if(opz.E_DV_cstr){   
-                    if((iSeg == nSeg)||((iSeg == 0)&&(!FB)&&(iLeg != 0))){
-                        LDV = UDV = .0;
-                    }
-                    else{
-                        LDV = -opz.DVtot_single_max;
-                        UDV = +opz.DVtot_single_max;
-                    }
                     opt.XL[i0 + 1 + 6 + j] = LDV;
                     opt.XU[i0 + 1 + 6 + j] = UDV;
                 }
@@ -413,10 +417,10 @@ int C_prb_RR_HMS::setup_worph(double *Xguess){
     for(int i; i < opz.FB_Legs.size(); i++){
         opt.GL[iG0 + 2*i] = opt.GU[iG0 + 2*i] = 0; // norm(v_inf-) = norm(v_inf+)
         opt.GL[iG0 + 2*i + 1] = 0; // r_p >= r_p_min
-        opt.GU[iG0 + 2*i + 1] = par.Infty;
+        opt.GU[iG0 + 2*i + 1] = 929000;
     }
 
-    if(opz.Limited_ToF){ // ToF - Max_ToF
+    if(opz.Limited_ToF){ // ToF - Max_ToF <= 0
         opt.GL[opt.m - 1] = -par.Infty;
         opt.GU[opt.m - 1] = 0;
     }
@@ -424,6 +428,14 @@ int C_prb_RR_HMS::setup_worph(double *Xguess){
     par.UserDF = false;
     par.UserDG = false;
     par.UserHM = false;
+
+    // for(int i = 0; i < opt.n; i++){
+    //         cout << "XL[" << i << "] = " << opt.XL[i] << endl;
+    // }
+    // for(int i = 0; i < opt.n; i++){
+    //     cout << "XU[" << i << "] = " << opt.XU[i] << endl;
+    // }
+    cin.get();
     return 0;
 }
 
@@ -475,8 +487,7 @@ void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj){
 
         // v_infp
         FB = false;
-        auto it = find(opz.FB_Legs.begin(), opz.FB_Legs.end(), iLeg);
-        if(it != opz.FB_Legs.end()) FB = true;
+        FB = find(opz.FB_Legs.begin(), opz.FB_Legs.end(), iLeg) != end(opz.FB_Legs);
         if(FB){
             propagateKEP_U(r0_RV_vector[iLeg - 1], v0_RV_vector[iLeg - 1], ToF, 1, r_G, v_G);
             v_infp = DV_k - v_G + v_kp;
@@ -488,11 +499,19 @@ void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj){
         P_kp = (eye6x6 + KKaug_k) * P_km * (eye6x6 + KKaug_k).transpose();
         covDV = KK_k*P_km*KK_k.transpose();
 
-        v_DVnorm[0] = DV_k.norm();  
-        if(opz.DVstd_model == 0) 
-            v_DVstd[0] = sqrt(covDV.trace());                         //sqrt(tr(DVstd))
-        else    
-            v_DVstd[0] = sqrt(covDV.eigenvalues().real().maxCoeff()); //max autovalore
+        if(FB||(iLeg == 0)){
+            v_DVnorm[0] = 0; 
+            v_DVstd[0] = 0;
+        }
+        else{
+            v_DVnorm[0] = DV_k.norm(); 
+            if(opz.DVstd_model == 0){
+                v_DVstd[0] = sqrt(covDV.trace());                         //sqrt(tr(DVstd))
+            }
+            else{
+                v_DVstd[0] = sqrt(covDV.eigenvalues().real().maxCoeff()); //max autovalore
+            }
+        }
 
         for(int iSeg = 0; iSeg < nSeg; iSeg++){
             T += dt;
@@ -514,10 +533,8 @@ void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj){
             if(opz.E_Pf_constraint) iG0 += 6*iLeg;
             if(opz.Fixed_ToF_Leg) iG0 += iLeg;
 
-            for(int j = 0; j < 3; j++)
-                G[iG0 + j] = r_k1m[j] - r_k1_hat[j];
-            for(int j = 0; j < 3; j++)
-                G[iG0 + 3 + j] = v_k1m[j] - v_k1m_hat[j];
+            for(int j = 0; j < 3; j++) G[iG0 + j] = r_k1m[j] - r_k1_hat[j];
+            for(int j = 0; j < 3; j++) G[iG0 + 3 + j] = v_k1m[j] - v_k1m_hat[j];
 
             // apply DV
             v_k1p = v_k1m + DV_k1;
@@ -525,6 +542,7 @@ void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj){
             MatrixXd P_k1p = (eye6x6 + KKaug_k1) * P_k1m_hat * (eye6x6 + KKaug_k1).transpose();  
             MatrixXd cov_DV_k1 = KK_k1*P_k1m*KK_k1.transpose();          
             
+
             v_DVnorm[iSeg + 1] = DV_k1.norm(); 
             if(opz.DVstd_model == 0) 
                 v_DVstd[iSeg + 1] = sqrt(cov_DV_k1.trace());                              // sqrt(tr(DVstd))
@@ -540,8 +558,7 @@ void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj){
 
         // v_infm
         FBm1 = false;
-        auto itm1 = find(opz.FB_Legs.begin(), opz.FB_Legs.end(), iLeg + 1);
-        if (itm1 != opz.FB_Legs.end()) FBm1 = true;
+        FBm1 = find(opz.FB_Legs.begin(), opz.FB_Legs.end(), iLeg + 1) != end(opz.FB_Legs);
         if(FBm1){
             propagateKEP_U(r0_RV_vector[iLeg], v0_RV_vector[iLeg], ToF, 1, r_G, v_G);
             v_infm = v_kp - v_G;
@@ -552,7 +569,7 @@ void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj){
         double DVtot = accumulate(v_DVnorm.begin(), v_DVnorm.end(), 0.);
         double DVstd_tot = accumulate(v_DVstd.begin(), v_DVstd.end(), 0.);
         //     F = DVtot;
-        F += DVtot + DVstd_tot * kstd;   
+        F += DVtot + DVstd_tot*kstd;   
 
         propagateKEP_U(r0_RV_vector[iLeg], v0_RV_vector[iLeg], ToF, 1, r_G, v_G);
 
@@ -587,21 +604,20 @@ void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj){
             for(int j = 0; j < 3; j++){
                 //G[iG0 + 6 + j] = P_kp(j,j) - sigma_r_G; 
                 G[iG0 + 6 + j] = opz.sf*(Pf_ev_r(j) - sigma_r_G);
-                }
+            }
             for(int j = 3; j < 6; j++){
                 //G[iG0 + 6 + j] = P_kp(j,j) - sigma_v_G; 
                 G[iG0 + 6 + j] = opz.sf*(Pf_ev_v(j-3) - sigma_v_G); 
-                }
+            }
         }
 
         // 1.3) DV_cstr
         if(opz.E_DV_cstr){
             int nPf_cstr = 0;
-            if(opz.E_Pf_constraint) nPf_cstr = 6;
-
-            for(int k = 0; k < nSeg + 1; k++){
-                // G[iG0+6+nPf_cstr + k] = v_DVnorm[k] + kstd*v_DVstd[k] - opz.DVtot_max/(nSeg+1); 
-                G[iG0 + 6 + nPf_cstr + k] = v_DVnorm[k] + kstd*v_DVstd[k] - opz.DVtot_single_max; 
+            if(opz.E_Pf_constraint) nPf_cstr = 6;{
+                for(int k = 0; k < nSeg + 1; k++){
+                    G[iG0 + 6 + nPf_cstr + k] = v_DVnorm[k] + kstd*v_DVstd[k] - opz.DVtot_single_max; 
+                }
             }
         }
 
@@ -619,8 +635,9 @@ void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj){
         v_inf_sqrd = v_infm_vec[i].squaredNorm();
         theta = acos((v_infm_vec[i]).dot(v_infp_vec[i])/v_inf_sqrd);
         r_p = opz.mu_FB*(1 - sin(theta/2))/(v_inf_sqrd*vconv*vconv*sin(theta/2));
-        G[iG0 + 2*i] = 0; // norm(v_inf-) = norm(v_inf+)
-        G[iG0 + 2*i + 1] = 0; // r_p >= r_min
+
+        G[iG0 + 2*i] = v_infm_vec[i].norm() - v_infp_vec[i].norm(); // v_infm_vec[i].norm() - v_infp_vec[i].norm()
+        G[iG0 + 2*i + 1] = r_p - opz.r_min; // r_p - opz.r_min
     }
     if(opz.Limited_ToF) G[opt.m - 1] = ToF - opz.Max_ToF;
     F *= ScaleObj;
@@ -629,18 +646,14 @@ void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj){
 void test_RR_HMS(){
     MatrixXd eye6 = MatrixXd::Identity(6, 6);
 
-    //--------------------------------//
     // Opzioni
-    //
     string opz_dir = "../data/RR/";
     //string fname_opz = opz_dir + "opz-rr-EarthMars_test.yaml"; 
     string fname_opz = opz_dir + "opz-rr-AFC1.yaml"; 
 
     C_prb_RR_HMS prb(fname_opz);
     
-    //--------------------------------//
     // inizializzazione
-    //
     vector<int> nSeg_vector = prb.nSeg_vector;
     vector<double> tf_vector = prb.tf_vector;
     int nLeg = prb.opz.nLeg;
@@ -651,10 +664,7 @@ void test_RR_HMS(){
     for (int i = 0; i < opt_n; i++)
         Xguess[i] = 0;
 
-    //--------------------------------//
     // Guess
-    // 
-
     prb.init_lin(Xguess);
     string fname;
     if (prb.opz.firstguess_folder.compare("d") == 0)
@@ -663,18 +673,14 @@ void test_RR_HMS(){
         fname = "../dbSOL/" + prb.opz.firstguess_folder + "/opt_X.dat";
     prb.load_sol(fname, Xguess);
     
-    //--------------------------------//
     // Setup
-    // 
     prb.setup_worph(Xguess);
 
-    int MaxIter = 10000;
-    // cout << "Jmax ?" << endl;
-    // cin >> MaxIter;
+    int MaxIter = prb.opz.Max_iter;
 
     time_t tstart, tend; 
 
-    if (MaxIter>0){
+    if(MaxIter > 0){
         prb.par.MaxIter = MaxIter;
         tstart = time(0);
         prb.solve();
@@ -697,12 +703,12 @@ void test_RR_HMS(){
     ofstream trajRV3file("../results/HMS-temp/trajRV3file.dat");
     string fname_savings = "../results/HMS-temp/opt_X.dat";
     string out_opz("../results/HMS-temp/opz.yaml");
-    double F, FLeg, dt, ToF, ToF_Leg, tfin;
+    double F, FLeg, dt, ToF, ToF_Leg, tfin, DVnorm_i, DVstd_i;
     int nSeg;
     F = 0;
     ToF = 0;
 
-    Vector3d r_k, v_km, r_k1, v_k1m, v_kp, DV_i, v_infp, v_infm;
+    Vector3d r_k, v_km, r_k1, v_k1m, v_kp, DV_i, v_infp, v_infm, r_G, v_G;
     MatrixXd P_km(6, 6), P_k1m(6, 6), P_kp(6, 6), Qd_k(6, 6), RR_k(6, 6), cov_DV_i(6, 6), KK_i(3, 6), KKaug_i(6, 6);
     vector<Vector3d> v_infm_vec, v_infp_vec;
 
@@ -736,28 +742,39 @@ void test_RR_HMS(){
         C_KeplerMultiArc traj;
         traj.add_keplerArc(C_KeplerArc(r_k, v_km, 0, 0));
 
-        for(int k = 0; k < nSeg + 1; k++){
-            int i0 = nVars*(accumulate(nSeg_vector.begin(), nSeg_vector.begin() + iLeg, 0.) + iLeg) + k*prb.nVars;
+        for(int iSeg = 0; iSeg < nSeg + 1; iSeg++){
+            int i0 = nVars*(accumulate(nSeg_vector.begin(), nSeg_vector.begin() + iLeg, 0.) + iLeg) + iSeg*prb.nVars;
             dt = prb.opt.X[i0];
             r_k = Eigen::Map<Vector3d>(prb.opt.X + i0 + 1, 3);
             v_km = Eigen::Map<Vector3d>(prb.opt.X + i0 + 1 + 3, 3);
-            if((prb.opz.v_RV_free)&&(k == 0)&&(iLeg > 0)){v_km = v_kp; r_k = r_k1;}
+            if((prb.opz.v_RV_free)&&(iSeg == 0)&&(iLeg > 0)){v_km = v_kp; r_k = r_k1;}
             DV_i = Eigen::Map<Vector3d>(prb.opt.X + i0 + 1 + 6, 3);
             KK_i = Eigen::Map<MatrixXd>(prb.opt.X + i0 + 1 + 6 + 3, 3, 6);
-            KKaug_i << MatrixXd::Zero(3, 6), KK_i;
+            KKaug_i << MatrixXd::Zero(3, 6), KK_i;   
+
+            // v_infp
+            if(iSeg == 0){
+                FB = false;
+                FB = find(prb.opz.FB_Legs.begin(), prb.opz.FB_Legs.end(), iLeg) != end(prb.opz.FB_Legs);
+                if(FB){
+                    propagateKEP_U(prb.r0_RV_vector[iLeg - 1], prb.v0_RV_vector[iLeg - 1], ToF, 1, r_G, v_G);
+                    v_infp = DV_i - v_G + v_kp;
+                    v_infp_vec.push_back(v_infp);
+                }
+            }
 
             // Apply DV
             v_kp = v_km + DV_i;
             P_kp = (eye6 + KKaug_i) * P_km * (eye6 + KKaug_i).transpose();
-            cov_DV_i = KK_i*P_km*KK_i.transpose() * prb.prconv;   
+            cov_DV_i = KK_i*P_km*KK_i.transpose() * prb.prconv;
 
-            if((prb.opz.E_nav_std == 1)&&((k != 0)||(iLeg == 0))){
-                P_kp += KKaug_i*(RR_k*KKaug_i.transpose());
-                cov_DV_i += KK_i*(RR_k*KK_i.transpose());
+            if((FB&&(iSeg == 0))||(iLeg == 0)&&(iSeg == 0)){
+                DVnorm_i = 0; 
             }
-
+            else{
+                DVnorm_i = DV_i.norm(); 
+            }
             double DVnorm_i = DV_i.norm(); 
-            double DVstd_i;
 
             if (prb.opz.DVstd_model == 0) 
                 DVstd_i = sqrt(cov_DV_i.trace());                     // sqrt(tr(DVstd))
@@ -777,11 +794,11 @@ void test_RR_HMS(){
             print_covariance(r_k, v_kp, P_km * prb.prconv, out_covEellipses);
             print_covariance(r_k, v_kp, P_kp * prb.prconv, out_covEellipses);
 
-            out_sommario << fixed << setw(2) << setprecision(8) << k << scientific << setw(2) << setprecision(5) << P_km.diagonal().transpose() << endl;
-            out_sommario << fixed << setw(2) << setprecision(8) << k << scientific << setw(2) << setprecision(5) << P_kp.diagonal().transpose() << endl;
+            out_sommario << fixed << setw(2) << setprecision(8) << iSeg << scientific << setw(2) << setprecision(5) << P_km.diagonal().transpose() << endl;
+            out_sommario << fixed << setw(2) << setprecision(8) << iSeg << scientific << setw(2) << setprecision(5) << P_kp.diagonal().transpose() << endl;
             out_sommario << endl;
 
-            if (k != nSeg){
+            if (iSeg != nSeg){
                 // propagate
                 
                 // Vector3d r_k1_hat, v_k1m_hat;  MatrixXd P_k1m_hat;
@@ -797,6 +814,16 @@ void test_RR_HMS(){
                 v_k1m = v_kp;
                 P_k1m = P_kp;
                 traj.add_keplerArc(C_KeplerArc(r_k, v_kp, ToF, 0));
+            }
+            // v_infm
+            if(iSeg == nSeg){
+                FBm1 = false;
+                FBm1 = find(prb.opz.FB_Legs.begin(), prb.opz.FB_Legs.end(), iLeg + 1) != end(prb.opz.FB_Legs);
+                if(FBm1){
+                    propagateKEP_U(prb.r0_RV_vector[iLeg], prb.v0_RV_vector[iLeg], ToF, 1, r_G, v_G);
+                    v_infm = v_kp - v_G;
+                    v_infm_vec.push_back(v_infm);
+                }
             }
 
             // update
@@ -831,6 +858,18 @@ void test_RR_HMS(){
 
             out_sommario << "ToF (actual) = " << ToF << endl;
             out_sommario << "ToF (max) \t = " << prb.opz.Max_ToF << endl;
+
+            double v_inf_sqrd, theta, r_p;
+            for(int i; i < prb.opz.FB_Legs.size(); i++){
+                v_inf_sqrd = v_infm_vec[i].squaredNorm();
+                theta = acos((v_infm_vec[i]).dot(v_infp_vec[i])/v_inf_sqrd);
+                r_p = prb.opz.mu_FB*(1 - sin(theta/2))/(v_inf_sqrd*prb.opz.vconv*prb.opz.vconv*sin(theta/2));
+                out_sommario << "r_p = " << r_p << endl;
+                out_sommario << "v_infm = " << v_infm_vec[i][0] << " " << v_infm_vec[i][1] << " " << v_infm_vec[i][2] << endl;
+                out_sommario << "v_infp = " << v_infp_vec[i][0] << " " << v_infp_vec[i][1] << " " << v_infp_vec[i][2] << endl;
+                out_sommario << "|v_infm| = " << v_infm_vec[i].norm() << endl;
+                out_sommario << "|v_infp| = " << v_infp_vec[i].norm() << endl;
+            }
         }
 
         out_sommario.close();

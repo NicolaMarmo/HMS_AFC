@@ -13,6 +13,7 @@ Options_rendezvousUT_t::Options_rendezvousUT_t(const std::string &filename){
     E_rendezvous = options_yaml["solver"]["E_rendezvous"].as<bool>();
     DVstd_model = options_yaml["solver"]["DVstd_model"].as<int>();  
     obj_func_switch = options_yaml["solver"]["objective"].as<int>();
+    Max_iter = options_yaml["solver"]["Max_iter"].as<int>();
     
     // E_fakeUT = options_yaml["solver"]["E_fakeUT"].as<bool>();
     E_nav_std = options_yaml["solver"]["E_nav_std"].as<bool>();

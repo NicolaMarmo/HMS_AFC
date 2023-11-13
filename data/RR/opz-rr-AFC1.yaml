@@ -8,6 +8,7 @@ solver:
   E_uniform_time: true            # true | false
   E_rendezvous:   true            # true | false
   sf: 1
+  Max_iter: 10000
   
   DVstd_model: 1                  # 0 = sqrt(tr( cov(DV) )) 
                                   # 1 = max eigval
@@ -22,12 +23,12 @@ solver:
   E_nav_std: false                # true | false                                               <----     
   v_RV_free: true                 # true | false                                               <---- 
   DV_RV_double: false             # true | false                                               <----     
-  Fixed_ToF_Leg: true                 # true | false                                               <----     
+  Fixed_ToF_Leg: true                # true | false                                               <----     
   Limited_ToF: true               # true | false                                               <----
 
 mission:
-  output_folder: "AFC8/"
-  firstguess_folder: "AFC8/" # type "d" for default folder "results/HMS-temp", otherwise type a folder in "dbSOL/"
+  output_folder: "AFC9/"
+  firstguess_folder: "AFC9/" # type "d" for default folder "results/HMS-temp", otherwise type a folder in "dbSOL/"
   muPrimary: 132712440018                     # [km^3/s^2]
   mu_FB: 398600.4418
   r0: [-1.036860803762830E+08, -1.097048551347926E+08, 8.148040847457945E+03]   
@@ -53,7 +54,7 @@ mission:
   Max_ToF: 9.471886463180184e+07
   r_min: 7000. # [km]
   DVtot_max: -1.                              # [km/s]  
-  DVtot_single_max: 1
+  DVtot_single_max: 0.13
   
   #questi sono valori sigma^2 
   sigma_r0:     0.e-5   
