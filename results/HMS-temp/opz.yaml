@@ -1,64 +1,46 @@
 solver:
-  nSeg1: 2
-  tfin1: 3.956865075167581
-  nSeg2: 2
-  tfin2: 2.250731132512577
-  nSeg3: 2
-  tfin3: 4.723780505383702
-  nSeg4: 2
-  tfin4: 7.674143742696809
-  nLeg: 4
+  nSeg1: 3
+  tfin1: 3.9568650751675807
+  nSeg2: 3
+  tfin2: 2.2507311325125774
+  nLeg: 2
   E_Pf_constraint: false
-  E_uniform_time: true
-  E_rendezvous: true
-  DVstd_model: 1
   E_DV_cstr: true
-  objective: 1
-  objective_std: false
   E_navigation_std: false
   v_RV_free: true
   DV_RV_double: false
   Fixed_DT: true
-  cov_collocation_mode: 0
-  cov_propagation:
-    mode: 1
-    nSub: 10
 
 mission:
-  output_folder: AFC9/
-  firstguess_folder: AFC9/
+  output_folder: AFC6/
+  firstguess_folder: AFC6/
   muPrimary: 132712440018
 
   r0_dim:
     - -103686080.376283
     - -109704855.1347926
-    - 8148.040847457945
+    - 8148.0408474579453
   v0_dim:
-    - 21.15894868015005
+    - 21.158948680150051
     - -20.56183496280147
     - 0.001289253233919929
   rf_dim:
-    - -102761439.5199
+    - -102761439.51989999
     - -110604530.5741505
-    - 7609.757003962994
+    - 7609.7570039629936
   vf_dim:
-    - 21.33568750922134
-    - -20.39795395973766
-    - 0.0008383063284247427
-  Max_ToF: 18.60552045576067
+    - 21.335687509221341
+    - -20.397953959737659
+    - 0.00083830632842474273
+  Max_ToF: 18.605520455760672
   r_min: 7000
-  DVtot_max: -0.03372570281860159
   DVtot_single_max: 0.13
 
-  sigma_r0: 0
-  sigma_v0: 0
-  sigma_rf_des: 5e-07
-  sigma_vf_des: 5e-08
-  sigma_rRV: 5e-08
-  sigma_vRV: 5e-07
-  Qd_r: -nan
-  Qd_v: -nan
+  sigma2_r0: 0
+  sigma2_v0: 0
+  sigma2_rf: 4.9999999999999998e-07
+  sigma2_vf: 4.9999999999999998e-08
+  sigma2_rRV: 4.9999999999999998e-08
+  sigma2_vRV: 4.9999999999999998e-07
   Qd_level: 0
-  nav_sigma_r: 0
-  nav_sigma_v: 0
   sf: 1

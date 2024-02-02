@@ -115,7 +115,7 @@ C_prb_RR_HMS::C_prb_RR_HMS(string fname_opz){
     vf = opz.vf;
 
     P0 = MatrixXd::Zero(6, 6);
-    P0.diagonal() << opz.sigma_r0, opz.sigma_r0, opz.sigma_r0, opz.sigma_v0, opz.sigma_v0, opz.sigma_v0;
+    P0.diagonal() << opz.sigma2_r0, opz.sigma2_r0, opz.sigma2_r0, opz.sigma2_v0, opz.sigma2_v0, opz.sigma2_v0;
     
     Qd_k = MatrixXd::Zero(Pdim, Pdim); 
     if(opz.Qd_level == 0)
@@ -137,18 +137,11 @@ C_prb_RR_HMS::C_prb_RR_HMS(string fname_opz){
         opt_Qd.close();
         }
     
-    RR_k = MatrixXd::Zero(Pdim, Pdim); 
-    RR_k.diagonal() << opz.nav_sigma_r, opz.nav_sigma_r, opz.nav_sigma_r, opz.nav_sigma_v, opz.nav_sigma_v, opz.nav_sigma_v;
-
     // Probability ADIM
-    if (opz.cov_propagation_mode == 0)
-        prconv = 1.;
-    else
-        prconv = 1;
+    prconv = 1;
 
     P0 /= prconv;   
     Qd_k /= prconv;
-    RR_k /= prconv;
 
     const double beta = 0.05; // Pr{DV > DVmax} < 1 - beta
     kstd = sqrt(2*log(1./beta) + sqrt(3.)); // circa 4.18 @ beta=0.05
@@ -354,7 +347,7 @@ int C_prb_RR_HMS::setup_worph(double *Xguess){
         // Vincoli: Residui + Condizioni al contorno
         // residuo r & v
         for(int iSeg = 0; iSeg < nSeg; iSeg++){
-            int iG0 = (nRes + 1)*Np1L + iSeg*(nRes); // r, v, sigma_rf, sigma_vf, DV
+            int iG0 = (nRes + 1)*Np1L + iSeg*(nRes); // r, v, sigma2_rf, sigma2_vf, DV
             if(opz.E_Pf_constraint) iG0 += 6*iLeg;
             if(opz.Fixed_ToF_Leg) iG0 += iLeg;
 
@@ -373,35 +366,21 @@ int C_prb_RR_HMS::setup_worph(double *Xguess){
             opt.GL[iG0 + i] = opt.GU[iG0 + i] = 0; 
         }
 
-        if(opz.obj_func_switch == 1){   // vincola Pf e DV
-            // covarianza di posizione finale: Pr - Prdes < 0
-            if(opz.E_Pf_constraint){
-                for(int j = 0; j < 6; j++){
-                    opt.GL[iG0 + 6 + j] = -par.Infty;   
-                    opt.GU[iG0 + 6 + j] = 0;
-                }
-            } 
-            // DVcstr: DV[k] - DV_max < 0
-            if (opz.E_DV_cstr){
-                int nPf_cstr = 0;
-                if(opz.E_Pf_constraint) nPf_cstr = 6;
-                for(int j = 0; j < nSeg + 1; j++){
-                    opt.GL[iG0 + 6 + nPf_cstr + j] = -par.Infty; 
-                    opt.GU[iG0 + 6 + nPf_cstr + j] = 0;
-                }
-            } 
-        }
-
-        else if (opz.obj_func_switch == 2){   // vincola DV e minimizza Pf
-            // DVcstr: DV[k] - DV_max < 0
+        // covarianza di posizione finale: Pr - Prdes < 0
+        if(opz.E_Pf_constraint){
+            for(int j = 0; j < 6; j++){
+                opt.GL[iG0 + 6 + j] = -par.Infty;   
+                opt.GU[iG0 + 6 + j] = 0;
+            }
+        } 
+        // DVcstr: DV[k] - DV_max < 0
+        if (opz.E_DV_cstr){
             int nPf_cstr = 0;
-            for (int j = 0; j < nSeg + 1; j++){
+            if(opz.E_Pf_constraint) nPf_cstr = 6;
+            for(int j = 0; j < nSeg + 1; j++){
                 opt.GL[iG0 + 6 + nPf_cstr + j] = -par.Infty; 
                 opt.GU[iG0 + 6 + nPf_cstr + j] = 0;
             }
-        }
-        else{
-            cout << " opz.obj_func_switch = " << opz.obj_func_switch << " non definito" << endl;
         } 
 
         // DT constraints
@@ -505,21 +484,13 @@ void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj){
         }
         else{
             v_DVnorm[0] = DV_k.norm(); 
-            if(opz.DVstd_model == 0){
-                v_DVstd[0] = sqrt(covDV.trace());                         //sqrt(tr(DVstd))
-            }
-            else{
-                v_DVstd[0] = sqrt(covDV.eigenvalues().real().maxCoeff()); //max autovalore
-            }
+            v_DVstd[0] = sqrt(covDV.eigenvalues().real().maxCoeff()); //max autovalore
         }
 
         for(int iSeg = 0; iSeg < nSeg; iSeg++){
             T += dt;
             // ottenuti per propagazione
-            if(opz.cov_propagation_mode == 0)
-                propagate_kepler_UT(r_km, v_kp, P_kp, dt, 1., Qd_k, r_k1_hat, v_k1m_hat, P_k1m_hat);
-            else
-                propagate_kepler_STM(r_km, v_kp, P_kp, dt, 1., Qd_k, r_k1_hat, v_k1m_hat, P_k1m_hat, opz.cov_propagation_nSub);
+            propagate_kepler_UT(r_km, v_kp, P_kp, dt, 1., Qd_k, r_k1_hat, v_k1m_hat, P_k1m_hat);
 
             int i0 = iX + (iSeg + 1)*nVars;
             dt = X[i0];
@@ -544,10 +515,7 @@ void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj){
             
 
             v_DVnorm[iSeg + 1] = DV_k1.norm(); 
-            if(opz.DVstd_model == 0) 
-                v_DVstd[iSeg + 1] = sqrt(cov_DV_k1.trace());                              // sqrt(tr(DVstd))
-            else    
-                v_DVstd[iSeg + 1] = sqrt(cov_DV_k1.eigenvalues().real().maxCoeff());      // max autovalore
+            v_DVstd[iSeg + 1] = sqrt(cov_DV_k1.eigenvalues().real().maxCoeff());      // max autovalore
 
             // update
             r_km = r_k1m; // note that: r_km = r_kp
@@ -593,21 +561,21 @@ void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj){
             Pf_ev_v = P_kp.block(3,3,3,3).eigenvalues().real();
             
             if(iLeg == nLeg - 1){
-                sigma_r_G = opz.sigma_rf_des*prconv;
-                sigma_v_G = opz.sigma_vf_des*prconv;
+                sigma2_r_G = opz.sigma2_rf;
+                sigma2_v_G = opz.sigma2_vf;
                 }
             else{
-                sigma_r_G = opz.sigma_rRV*prconv;
-                sigma_v_G = opz.sigma_vRV*prconv;
+                sigma2_r_G = opz.sigma2_rRV;
+                sigma2_v_G = opz.sigma2_vRV;
             }
              
             for(int j = 0; j < 3; j++){
-                //G[iG0 + 6 + j] = P_kp(j,j) - sigma_r_G; 
-                G[iG0 + 6 + j] = opz.sf*(Pf_ev_r(j) - sigma_r_G);
+                //G[iG0 + 6 + j] = P_kp(j,j) - sigma2_r_G; 
+                G[iG0 + 6 + j] = opz.sf*(Pf_ev_r(j) - sigma2_r_G);
             }
             for(int j = 3; j < 6; j++){
-                //G[iG0 + 6 + j] = P_kp(j,j) - sigma_v_G; 
-                G[iG0 + 6 + j] = opz.sf*(Pf_ev_v(j-3) - sigma_v_G); 
+                //G[iG0 + 6 + j] = P_kp(j,j) - sigma2_v_G; 
+                G[iG0 + 6 + j] = opz.sf*(Pf_ev_v(j-3) - sigma2_v_G); 
             }
         }
 
@@ -667,7 +635,7 @@ void test_RR_HMS(){
     // Guess
     prb.init_lin(Xguess);
     string fname;
-    if (prb.opz.firstguess_folder.compare("d") == 0)
+    if(prb.opz.firstguess_folder.compare("d") == 0)
         fname = "../results/HMS-temp/opt_X.dat";
     else
         fname = "../dbSOL/" + prb.opz.firstguess_folder + "/opt_X.dat";
@@ -709,7 +677,7 @@ void test_RR_HMS(){
     ToF = 0;
 
     Vector3d r_k, v_km, r_k1, v_k1m, v_kp, DV_i, v_infp, v_infm, r_G, v_G;
-    MatrixXd P_km(6, 6), P_k1m(6, 6), P_kp(6, 6), Qd_k(6, 6), RR_k(6, 6), cov_DV_i(6, 6), KK_i(3, 6), KKaug_i(6, 6);
+    MatrixXd P_km(6, 6), P_k1m(6, 6), P_kp(6, 6), Qd_k(6, 6), cov_DV_i(6, 6), KK_i(3, 6), KKaug_i(6, 6);
     vector<Vector3d> v_infm_vec, v_infp_vec;
 
     vector<double> v_DVnorm, v_DVstd, ToF_par;
@@ -737,7 +705,6 @@ void test_RR_HMS(){
             P_km = P_kp;
         }
         Qd_k = prb.Qd_k;
-        RR_k = prb.RR_k;
 
         C_KeplerMultiArc traj;
         traj.add_keplerArc(C_KeplerArc(r_k, v_km, 0, 0));
@@ -775,13 +742,8 @@ void test_RR_HMS(){
                 DVnorm_i = DV_i.norm(); 
             }
             double DVnorm_i = DV_i.norm(); 
-
-            if (prb.opz.DVstd_model == 0) 
-                DVstd_i = sqrt(cov_DV_i.trace());                     // sqrt(tr(DVstd))
-            else{
-                DVstd_i = sqrt(cov_DV_i.eigenvalues().real().maxCoeff());      // max autovalore
-                // cout << cov_DV_i.eigenvalues() << "\t" << DVstd_i << endl;
-            }
+            DVstd_i = sqrt(cov_DV_i.eigenvalues().real().maxCoeff());      // max autovalore
+        
 
             v_DVnorm.push_back(DVnorm_i);
             v_DVstd.push_back(DVstd_i);
@@ -802,11 +764,7 @@ void test_RR_HMS(){
                 // propagate
                 
                 // Vector3d r_k1_hat, v_k1m_hat;  MatrixXd P_k1m_hat;
-                if (prb.opz.cov_propagation_mode == 0)
-                    propagate_kepler_UT(r_k, v_kp, P_kp, dt, 1., Qd_k, r_k1, v_k1m, P_k1m);
-                else
-                    propagate_kepler_STM(r_k, v_kp, P_kp, dt, 1., Qd_k, r_k1, v_k1m, P_k1m, prb.opz.cov_propagation_nSub);
-
+                propagate_kepler_UT(r_k, v_kp, P_kp, dt, 1., Qd_k, r_k1, v_k1m, P_k1m);
                 traj.add_keplerArc(C_KeplerArc(r_k, v_kp, ToF, dt));
             }
             else{
@@ -898,7 +856,12 @@ void test_RR_HMS(){
     string ans = "S";
     //cout << "Copy solution in dbSOL? (S/n)" << endl;
     //cin >> ans;
-    if (ans.compare("S") == 0 || ans.compare("s") == 0){
+    string f;
+    struct stat sb;
+
+    f = "../dbSOL/" + prb.opz.output_folder;
+    const char* folder = f.c_str();
+    if(ans.compare("S") == 0 || ans.compare("s") == 0){
         ofstream of("../results/HMS-temp/fullsol.dat", ios_base::binary);
         for(int i; i < nLeg; i++){
             ifstream if_a("../results/HMS-temp/fullsol" + to_string(i + 1) + ".dat", ios_base::binary);
@@ -906,9 +869,11 @@ void test_RR_HMS(){
         }
 
         string cmd;
+        if(stat(folder, &sb) == 0 && S_ISDIR(sb.st_mode)){
+            cmd = string("cd ..; rm -r dbSOL/") + prb.opz.output_folder; system(cmd.c_str()); 
+        }
         cmd = "mkdir -p ../dbSOL/" + prb.opz.output_folder; system(cmd.c_str()); //cout << cmd << endl;
         cmd = string("cp -RT ") + "../results/HMS-temp" + " ../dbSOL/" + prb.opz.output_folder;  system(cmd.c_str()); //cout << cmd << endl;
-        // cmd = "cp -RT " + output_dir + " ../dbSOL/"+prb.opz.output_folder;  system(cmd.c_str()); cout << cmd << endl;
     }
     cout << "It took " << difftime(tend, tstart) << " second(s) to solve the ROCP."<< endl;
 }

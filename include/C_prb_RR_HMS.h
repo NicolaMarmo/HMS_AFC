@@ -21,6 +21,10 @@ using Eigen::MatrixXd;
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <thread>
+#include <stdio.h>
+#include <sys/stat.h>
+#include <dirent.h>
 using namespace std;
 
 void test_RR_HMS();
@@ -47,12 +51,11 @@ class C_prb_RR_HMS
     Vector3d r_G, v_G;
     Vector3d r0_X, v0_X; 
 
-    double sigma_r_G, sigma_v_G;
+    double sigma2_r_G, sigma2_v_G;
 
     double mass0;
     double THR, C;
     MatrixXd Qd_k;
-    MatrixXd RR_k;  // covariance of navigation error
 
     ifstream opt_Qd;
     string line;

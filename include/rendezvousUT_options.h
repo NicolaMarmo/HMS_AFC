@@ -45,24 +45,14 @@ public:
     string firstguess_folder;
     bool E_Pf_constraint;
     bool E_DV_cstr;
-    bool E_uniform_time;
-    bool E_rendezvous;
+
     bool v_RV_free;
     bool DV_RV_double;
-    // bool E_fakeUT;
     bool E_nav_std;
-    bool objective_std;
     bool Fixed_ToF_Leg;
     bool Limited_ToF;
-    int obj_func_switch;               // 0: energy, 1 = fuel;, 2 = min_trace_cov
-    int DVstd_model;
-
-    int cov_collocation_mode;     //0 = tutta, 1 = tiangolare (L), 2 = Simmetrica (S), 3 = Xcorr
     
-    int cov_propagation_mode;
-    int cov_propagation_nSub;
-    
-    double amu_dim, mu_FB;
+    double mu_primary, mu_FB;
     double tfin1, tfin2, tfin3;
     double Max_ToF;
 
@@ -70,34 +60,17 @@ public:
 
     Vector3d r0, v0, rf, vf, rRV, vRV, r0_RV, v0_RV;
 
-    double sigma_r0;
-    double sigma_v0;
-    double sigma_rf_des;
-    double sigma_vf_des;
-    double sigma_rRV;
-    double sigma_vRV;
-    double DVtot_max;  
+    double sigma2_r0, sigma2_v0, sigma2_rf, sigma2_vf, sigma2_rRV, sigma2_vRV;
+
     double DVtot_single_max;   
 
-    double Qd_r, Qd_v;
     int Qd_level;
-    double nav_sigma_r;  //std^2
-    double nav_sigma_v;  //std^2
- 
-    // bounds
-    double px_lb, px_ub; 
-    double py_lb, py_ub;
-    double pz_lb, pz_ub;
-    double vx_lb, vx_ub;
-    double vy_lb, vy_ub;
-    double vz_lb, vz_ub;
 
     // Nondimensionalization
     double rconv;
     double vconv;
     double aconv;
     double tconv;
-    double amrif;
 
 public:
     //costruttore
