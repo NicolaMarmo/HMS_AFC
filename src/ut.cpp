@@ -60,7 +60,6 @@ void propagate_kepler_UT(Vector3d r0_mean, Vector3d v0_mean, MatrixXd P0, double
     MatrixXd XX;
     ut.eval_sigmaPoints(s0, P0, XX);
 
-
     // propago: YY = propagate_kep(XX,dt)   
     MatrixXd YY(n,2*n+1);
     for (int j=0; j<1+2*n; j++)
@@ -248,16 +247,63 @@ void propagate_kepler_STM(Vector3d r0_mean, Vector3d v0_mean, MatrixXd P0, doubl
 
 void Pf_STM(Vector3d r0, Vector3d v0, MatrixXd P0, double dt_sec, double mu, MatrixXd Qd_k, 
             MatrixXd& Pf){
-                
     VectorXd YY_ODE(6), x0(42);
     MatrixXd PHIf_ODE(6, 6);
     x0 << r0, v0, MatrixXd::Identity(6, 6).reshaped();
     C_simulazione_ODE sim_ODE(42, 2, 1, 1e-14, 1e-14);
     sim_ODE.SetY0_Sim(x0);
-    EoM_Kepler_ODE_STM EoM_ODE(1., 2*M_PI);
+    EoM_Kepler_ODE_STM EoM_ODE(mu, dt_sec);
     sim_ODE.Start_Sim(EoM_ODE);
     YY_ODE = sim_ODE.Y.rightCols(1);
     PHIf_ODE = YY_ODE.tail(36).reshaped(6, 6);
 
-    Pf = PHIf_ODE.transpose() * P0 * PHIf_ODE + Qd_k;
+    Pf = PHIf_ODE.transpose()*P0*PHIf_ODE + Qd_k;
 }   
+
+void Propagate_P_FB(const MatrixXd& P0, const Vector3d& v_infm, const Vector3d& v_infp, const double SoI_R, const double mu,
+                    MatrixXd Pf){
+    double v_inf_sqrd = v_infm.squaredNorm();
+    double a = 1/(2/SoI_R - v_inf_sqrd/mu);
+    double theta = acos((v_infm).dot(v_infp)/v_inf_sqrd);
+    double e = 1/sin(theta/2);
+    double D = -a*sqrt(pow(e, 2) - 1);
+    double p = -a*(1 - pow(e, 2));
+    double cosni = (p/SoI_R - 1)/e;
+    double coshF = (a - SoI_R)/(a*e);
+    double sinhF = sqrt(pow(coshF, 2) - 1);
+    double F = log(coshF + sqrt(pow(coshF, 2) - 1));
+    double DT = 2*sqrt(-pow(a, 3)/mu)*(e*sinhF - F); // DA CONVERTIRE QUANDO USATO NEL ROCP
+    cout << "sinhF = " << sinhF << endl;
+    cout << "coshF = " << coshF << endl;
+    cout << "F = " << F << endl;
+    cout << "cosni = " << cosni << endl;
+    cout << "e = " << e << endl;
+    cout << "a = " << a << endl;
+    cout << "D = " << D << endl;
+    cout << "theta = " << theta << endl;
+
+    Vector3d r0, v0, v_infm_ver, v_infp_ver, z, z_ver;
+    MatrixXd R(3, 3), RM(6, 6), P0R(6, 6), PfR(6, 6);
+    v_infm_ver = v_infm/v_infm.norm();
+    v_infp_ver = v_infp/v_infp.norm();
+    R.col(0) = v_infm_ver;
+    z = v_infm.cross(v_infp);
+    z_ver = z/z.norm();
+    R.col(1) = z_ver.cross(v_infm_ver);
+    R.col(2) = z_ver;
+    RM << R, MatrixXd::Zero(3, 3), MatrixXd::Zero(3, 3), R;
+    D = 5e4;
+    r0 << -sqrt(pow(SoI_R, 2) - pow(D, 2)), -D, 0;
+    v0 << v_infm.norm(), 0, 0;
+    P0R = RM.transpose()*P0*RM;
+    Pf_STM(r0, v0, P0R, DT, mu, MatrixXd::Zero(6, 6), PfR);
+    Pf = RM*PfR*RM.transpose();
+    cout << "P0 = " << endl << P0 << endl;
+    cout << "R = " << endl << R << endl;
+    cout << "RM = " << endl << RM << endl;
+    cout << "P0R = " << endl << P0R << endl;
+    cout << "PfR = " << endl << PfR << endl;
+    cout << "v_infm_ver = " << v_infm_ver << endl;
+    cout << "Pf = " << endl << Pf << endl;
+    cout << "DT = " << DT << endl;
+};

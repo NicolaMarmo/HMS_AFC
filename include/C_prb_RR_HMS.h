@@ -33,7 +33,6 @@ class C_prb_RR_HMS
 {
     public:
     double rconv, vconv, tconv, aconv, amrif;
-    double prconv; 
 
     const double muSun = 132712440018;      //km^3/s^2
     const double muEarth = 398600.4;        //km^3/s^2
@@ -53,8 +52,6 @@ class C_prb_RR_HMS
 
     double sigma2_r_G, sigma2_v_G;
 
-    double mass0;
-    double THR, C;
     MatrixXd Qd_k;
 
     ifstream opt_Qd;

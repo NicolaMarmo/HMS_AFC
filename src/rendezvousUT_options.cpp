@@ -5,34 +5,36 @@ Options_rendezvousUT_t::Options_rendezvousUT_t(const std::string &filename){
     // Read YAML file
     options_yaml = YAML::LoadFile(filename);
 
-    nLeg =  options_yaml["solver"]["nLeg"].as<int>();
-    sf =  options_yaml["solver"]["sf"].as<int>();
-    Max_iter = options_yaml["solver"]["Max_iter"].as<int>();
+    nLeg =              options_yaml["solver"]["nLeg"].as<int>();
+    sf =                options_yaml["solver"]["sf"].as<int>();
+    Max_iter =          options_yaml["solver"]["Max_iter"].as<int>();
 
-    E_DV_cstr =  options_yaml["solver"]["E_DV_cstr"].as<bool>();
-    E_Pf_constraint =  options_yaml["solver"]["E_Pf_constraint"].as<bool>();
+    E_DV_cstr =         options_yaml["solver"]["E_DV_cstr"].as<bool>();
+    E_Pf_constraint =   options_yaml["solver"]["E_Pf_constraint"].as<bool>();
     
     // E_fakeUT = options_yaml["solver"]["E_fakeUT"].as<bool>();
-    E_nav_std = options_yaml["solver"]["E_nav_std"].as<bool>();
-    v_RV_free = options_yaml["solver"]["v_RV_free"].as<bool>();
-    DV_RV_double = options_yaml["solver"]["DV_RV_double"].as<bool>();
-    Fixed_ToF_Leg = options_yaml["solver"]["Fixed_ToF_Leg"].as<bool>();
-    Limited_ToF = options_yaml["solver"]["Limited_ToF"].as<bool>();
+    E_nav_std =         options_yaml["solver"]["E_nav_std"].as<bool>();
+    v_RV_free =         options_yaml["solver"]["v_RV_free"].as<bool>();
+    DV_RV_double =      options_yaml["solver"]["DV_RV_double"].as<bool>();
+    Fixed_ToF_Leg =     options_yaml["solver"]["Fixed_ToF_Leg"].as<bool>();
+    Limited_ToF =       options_yaml["solver"]["Limited_ToF"].as<bool>();
+    Equal_Segment_ToF = options_yaml["solver"]["Equal_Segment_ToF"].as<bool>();
     
     /* Mission */
-    output_folder = options_yaml["mission"]["output_folder"].as<string>();
+    output_folder =     options_yaml["mission"]["output_folder"].as<string>();
     firstguess_folder = options_yaml["mission"]["firstguess_folder"].as<string>();
-    mu_primary= options_yaml["mission"]["muPrimary"].as<double>();
-    mu_FB = options_yaml["mission"]["mu_FB"].as<double>();
+    mu_primary=         options_yaml["mission"]["muPrimary"].as<double>();
+    mu_FB =             options_yaml["mission"]["mu_FB"].as<double>();
+    SoI_R =             options_yaml["mission"]["SoI_R"].as<double>();
 
-    sigma2_r0 =  options_yaml["mission"]["sigma2_r0"].as<double>();
-    sigma2_v0 =  options_yaml["mission"]["sigma2_v0"].as<double>();
-    sigma2_rf =  options_yaml["mission"]["sigma2_rf"].as<double>();
-    sigma2_vf =  options_yaml["mission"]["sigma2_vf"].as<double>();
-    sigma2_rRV =  options_yaml["mission"]["sigma2_rRV"].as<double>();
-    sigma2_vRV =  options_yaml["mission"]["sigma2_vRV"].as<double>();
+    sigma2_r0 =         options_yaml["mission"]["sigma2_r0"].as<double>();
+    sigma2_v0 =         options_yaml["mission"]["sigma2_v0"].as<double>();
+    sigma2_rf =         options_yaml["mission"]["sigma2_rf"].as<double>();
+    sigma2_vf =         options_yaml["mission"]["sigma2_vf"].as<double>();
+    sigma2_rRV =        options_yaml["mission"]["sigma2_rRV"].as<double>();
+    sigma2_vRV =        options_yaml["mission"]["sigma2_vRV"].as<double>();
 
-    Qd_level =  options_yaml["mission"]["Qd_level"].as<int>();
+    Qd_level =          options_yaml["mission"]["Qd_level"].as<int>();
     
     // int n_r0_dim = options_yaml["mission"]["r0_dim"].size();
     for(int i = 0; i < 3; i++){  
@@ -109,19 +111,23 @@ void Options_rendezvousUT_t::emit(const std::string &filename){
             out << YAML::Key << "nLeg" << YAML::Value << nLeg;
             out << YAML::Key << "E_Pf_constraint" << YAML::Value << E_Pf_constraint;
 
-            out << YAML::Key << "E_DV_cstr" << YAML::Value << E_DV_cstr;
-            out << YAML::Key << "E_navigation_std" << YAML::Value << E_nav_std;
-            out << YAML::Key << "v_RV_free" << YAML::Value << v_RV_free;
-            out << YAML::Key << "DV_RV_double" << YAML::Value << DV_RV_double;
-            out << YAML::Key << "Fixed_DT" << YAML::Value << Fixed_ToF_Leg;
+            out << YAML::Key << "E_DV_cstr"         << YAML::Value << E_DV_cstr;
+            out << YAML::Key << "E_navigation_std"  << YAML::Value << E_nav_std;
+            out << YAML::Key << "v_RV_free"         << YAML::Value << v_RV_free;
+            out << YAML::Key << "DV_RV_double"      << YAML::Value << DV_RV_double;
+            out << YAML::Key << "Fixed_ToF_Leg"     << YAML::Value << Fixed_ToF_Leg;
+            out << YAML::Key << "Limited_ToF"       << YAML::Value << Limited_ToF;
+            out << YAML::Key << "Equal_Segment_ToF" << YAML::Value << Equal_Segment_ToF;
         out << YAML::EndMap;
         out << YAML::Newline << YAML::Newline;
 
         out << YAML::Key << "mission";
         out << YAML::BeginMap;
-            out << YAML::Key << "output_folder" << YAML::Value << output_folder;
+            out << YAML::Key << "output_folder"     << YAML::Value << output_folder;
             out << YAML::Key << "firstguess_folder" << YAML::Value << firstguess_folder;
-            out << YAML::Key << "muPrimary" << YAML::Value << mu_primary;
+            out << YAML::Key << "muPrimary"         << YAML::Value << mu_primary;
+            out << YAML::Key << "mu_FB"             << YAML::Value << mu_FB;
+            out << YAML::Key << "SoI_R"             << YAML::Value << SoI_R;
             out << YAML::Newline << YAML::Newline;
 
             vector<double> r0_dim = {r0[0]*rconv, r0(1)*rconv, r0(2)*rconv};
@@ -129,24 +135,24 @@ void Options_rendezvousUT_t::emit(const std::string &filename){
             vector<double> rf_dim = {rf[0]*rconv, rf(1)*rconv, rf(2)*rconv};
             vector<double> vf_dim = {vf[0]*vconv, vf(1)*vconv, vf(2)*vconv};
 
-            out << YAML::Key << "r0_dim" << YAML::Value << r0_dim;
-            out << YAML::Key << "v0_dim" << YAML::Value << v0_dim;
-            out << YAML::Key << "rf_dim" << YAML::Value << rf_dim;
-            out << YAML::Key << "vf_dim" << YAML::Value << vf_dim;
-            out << YAML::Key << "Max_ToF" << YAML::Value << Max_ToF;
-            out << YAML::Key << "r_min" << YAML::Value << r_min;
-            out << YAML::Key << "DVtot_single_max" << YAML::Value << DVtot_single_max;
+            out << YAML::Key << "r0_dim"            << YAML::Value << r0_dim;
+            out << YAML::Key << "v0_dim"            << YAML::Value << v0_dim;
+            out << YAML::Key << "rf_dim"            << YAML::Value << rf_dim;
+            out << YAML::Key << "vf_dim"            << YAML::Value << vf_dim;
+            out << YAML::Key << "Max_ToF"           << YAML::Value << Max_ToF;
+            out << YAML::Key << "r_min"             << YAML::Value << r_min;
+            out << YAML::Key << "DVtot_single_max"  << YAML::Value << DVtot_single_max;
             
             out << YAML::Newline << YAML::Newline;
-            out << YAML::Key << "sigma2_r0" << YAML::Value << sigma2_r0;
-            out << YAML::Key << "sigma2_v0" << YAML::Value << sigma2_v0;
-            out << YAML::Key << "sigma2_rf" << YAML::Value << sigma2_rf;
-            out << YAML::Key << "sigma2_vf" << YAML::Value << sigma2_vf;
-            out << YAML::Key << "sigma2_rRV" << YAML::Value << sigma2_rRV;
-            out << YAML::Key << "sigma2_vRV" << YAML::Value << sigma2_vRV;
+            out << YAML::Key << "sigma2_r0"         << YAML::Value << sigma2_r0;
+            out << YAML::Key << "sigma2_v0"         << YAML::Value << sigma2_v0;
+            out << YAML::Key << "sigma2_rf"         << YAML::Value << sigma2_rf;
+            out << YAML::Key << "sigma2_vf"         << YAML::Value << sigma2_vf;
+            out << YAML::Key << "sigma2_rRV"        << YAML::Value << sigma2_rRV;
+            out << YAML::Key << "sigma2_vRV"        << YAML::Value << sigma2_vRV;
 
-            out << YAML::Key << "Qd_level" << YAML::Value << Qd_level;
-            out << YAML::Key << "sf" << YAML::Value << sf;
+            out << YAML::Key << "Qd_level"          << YAML::Value << Qd_level;
+            out << YAML::Key << "sf"                << YAML::Value << sf;
             
         out << YAML::EndMap;
     out << YAML::EndMap;

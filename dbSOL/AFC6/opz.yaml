@@ -1,7 +1,7 @@
 solver:
-  nSeg1: 3
+  nSeg1: 4
   tfin1: 3.9568650751675807
-  nSeg2: 3
+  nSeg2: 4
   tfin2: 2.2507311325125774
   nLeg: 2
   E_Pf_constraint: false
@@ -9,7 +9,9 @@ solver:
   E_navigation_std: false
   v_RV_free: true
   DV_RV_double: false
-  Fixed_DT: true
+  Fixed_ToF_Leg: true
+  Limited_ToF: true
+  Equal_Segment_ToF: true
 
 mission:
   output_folder: AFC6/

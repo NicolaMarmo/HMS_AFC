@@ -8,7 +8,23 @@ using namespace std;
 
 int main(){
     // Hybrid Multi Shooting
-    test_RR_HMS();
+    //test_RR_HMS();
+    MatrixXd P0(6, 6), Pf(6, 6);
+    Vector3d v_infm, v_infp;
+    v_infm <<  2.16500000000000,	1.08250000000000,	0.625000000000000;
+    v_infp << -1.84769317509121,	1.45832611672181,	0.841989674781640;
+    P0.diagonal() << 2.5e7, 2.5e7, 2.5e7, 1e-6, 1e-6, 1e-6;
+    Propagate_P_FB(P0, v_infm, v_infp, 929000, 3.986004418e5, Pf);
+
+    // Vector3d r0, v0;
+    // MatrixXd P0(6, 6), Pf(6, 6);
+    // double dt_sec = 6.637443485871841e+05;
+    // r0 << -778347.923501835,	-439171.761750917,	-253563.372835403;
+    // v0 << 2.16500000000000,	1.08250000000000,	0.625000000000000;
+    // P0.diagonal() << 2.5e7, 2.5e7, 2.5e7, 1e-6, 1e-6, 1e-6;
+    // Pf_STM(r0, v0, P0, dt_sec, 3.986004418e5, MatrixXd::Zero(6, 6),
+    //         Pf);
+    // cout << "Pf = " << endl << Pf << endl;
 
     // VectorXd YY(6), YY_ODE(6), xf_ODE(6); 
     // VectorXd x0rv(6), xf(6), x0(42); x0rv << 3., 0., 0., 0., 2.5, 1.;

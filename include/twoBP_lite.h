@@ -176,11 +176,6 @@ inline void lagrangefDotgDot_kepU(const double mu, const double x, const double 
     gdot = 1. - x*x / r*stumpC(z);
 }
 
-
-
-
-
-
 //Propagation through universal elements. 
 //This function computes the state vector (R, V) from the initial state vector (R0, V0) and the elapsed time dt_sec.
 inline void propagateKEP_U(const Vector3d& R0, const Vector3d& V0, const double dt_sec, const double mu,

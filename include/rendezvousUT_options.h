@@ -51,8 +51,9 @@ public:
     bool E_nav_std;
     bool Fixed_ToF_Leg;
     bool Limited_ToF;
+    bool Equal_Segment_ToF;
     
-    double mu_primary, mu_FB;
+    double mu_primary, mu_FB, SoI_R;
     double tfin1, tfin2, tfin3;
     double Max_ToF;
 

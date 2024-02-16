@@ -165,26 +165,26 @@ class EoM_Kepler_ODE_STM{
     EoM_Kepler_ODE_STM(double mu, double tau) : mu(mu), tau(tau) {};                   
 
     void operator()(double t, double X[], double dXdt[]){
-        double r3 = pow((pow(X[0], 2) + pow(X[1], 2) + pow(X[2], 2)), 1.5); 
-        double r2 = pow(X[0], 2) + pow(X[1], 2) + pow(X[2], 2); 
+        Vector3d r; r << X[0], X[1], X[2];
+        double r3 = pow(r.norm(), 3); 
+        double r2 = pow(r(0), 2) + pow(r(1), 2) + pow(r(2), 2); 
         MatrixXd Phi(6, 6), Phip(6, 6);
         for(int i = 0; i < 6; i++){
             for(int j = 0; j < 6; j++){
                 Phi(i, j) = X[6*i + j + 6];
             }
         }
-        Vector3d r(X[0], X[1], X[2]);
 
         MatrixXd A(6, 6);
         A.setZero();
         A.block<3, 3>(0, 3) = Matrix3d::Identity();
-        A.block<3, 3>(3, 0) = (3*mu*r*r.transpose() - mu*pow(r.norm(), 2)*Matrix3d::Identity())/pow(r.norm(), 5);
+        A.block<3, 3>(3, 0) = mu*(3*r*r.transpose() - r2*MatrixXd::Identity(3, 3))/pow(r.norm(), 5);
 
         Phip = A*Phi*tau;
 
-        dXdt[0] = tau*X[3];
-        dXdt[1] = tau*X[4];
-        dXdt[2] = tau*X[5];
+        dXdt[0] =  tau*X[3];
+        dXdt[1] =  tau*X[4];
+        dXdt[2] =  tau*X[5];
         dXdt[3] = -tau*(mu*X[0])/r3;
         dXdt[4] = -tau*(mu*X[1])/r3;
         dXdt[5] = -tau*(mu*X[2])/r3;
@@ -195,3 +195,6 @@ class EoM_Kepler_ODE_STM{
         }
     }
 };
+
+void Propagate_P_FB(const MatrixXd& P0, const Vector3d& v_infm, const Vector3d& v_infp, const double SoI_R, const double mu,
+    MatrixXd Pf);
