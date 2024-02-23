@@ -307,3 +307,14 @@ void Propagate_P_FB(const MatrixXd& P0, const Vector3d& v_infm, const Vector3d& 
     cout << "Pf = " << endl << Pf << endl;
     cout << "DT = " << DT << endl;
 };
+
+void ToF_Hyperbola(const Vector3d r_infm, const Vector3d v_infm, const double mu, double& ToF){
+    double a = 1/(2/r_infm.norm() - v_infm.squaredNorm()/mu);
+    double E = v_infm.squaredNorm()/2 - mu/r_infm.norm();
+    Vector3d h_vec = r_infm.cross(v_infm);
+    double e = sqrt(1 + 2*E*h_vec.squaredNorm()/pow(mu, 2));
+    double coshF = (a - r_infm.norm())/(a*e); 
+    double sinhF = sqrt(pow(coshF, 2) - 1);
+    double F = log(coshF + sqrt(pow(coshF, 2) - 1));
+    ToF = 2*sqrt(-pow(a, 3)/mu)*(e*sinhF - F);
+}

@@ -58,7 +58,7 @@ set (EXE_INCLUDE_DIR include)
 # set (EOS_HOME ${PROJECT_SOURCE_DIR}/ext/EOS)
 # set (EOS_INCLUDE_DIR ${EOS_HOME}/include)
 
-set(EIGEN_INCLUDE_DIR "/usr/local/include/eigen3")
+set(EIGEN_INCLUDE_DIR "/usr/local/include/Eigen")
 
 include_directories("/usr/local/include")
 

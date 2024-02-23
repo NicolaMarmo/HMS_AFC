@@ -1,6 +1,6 @@
 #include "../include/C_prb_RR_HMS.h"
-#include<string>
-#include<sstream>
+#include <string>
+#include <sstream>
 #include <ctime>
 
  void C_prb_RR_HMS::init_lin(double *Xguess){
@@ -113,6 +113,8 @@ C_prb_RR_HMS::C_prb_RR_HMS(string fname_opz){
     v0 = opz.v0;
     rf = opz.rf;
     vf = opz.vf;
+
+    mu_FB = opz.mu_FB/opz.mu_primary;
 
     P0 = MatrixXd::Zero(6, 6);
     P0.diagonal() << opz.sigma2_r0, opz.sigma2_r0, opz.sigma2_r0, opz.sigma2_v0, opz.sigma2_v0, opz.sigma2_v0;
@@ -251,7 +253,7 @@ int C_prb_RR_HMS::setup_worph(double *Xguess){
         Np1L = accumulate(nSeg_vector.begin(), nSeg_vector.begin() + iLeg, 0.) + iLeg;
 
         FB = false;
-        FB = find(opz.FB_Legs.begin(), opz.FB_Legs.end(), iLeg) != end(opz.FB_Legs);
+        FB = find(opz.FB_Legs.begin(), opz.FB_Legs.end(), iLeg) != end(opz.FB_Legs); // true in the leg right after FB
 
         for(int iSeg = 0; iSeg < nSeg + 1; iSeg++){
             i0 = nVars*Np1L + iSeg*nVars;
@@ -278,20 +280,24 @@ int C_prb_RR_HMS::setup_worph(double *Xguess){
                 opt.XU[i0 + 1 + 3 + j] = +2.0;
             }
 
-            if((iLeg != 0)&&(iSeg == 0)){
-                for (int j = 0; j < 3; j++){
-                opt.XL[i0 + 1 + j] = opt.XU[i0 + 1 + j] = 0;
-                opt.XL[i0 + 1 + 3 + j] = opt.XU[i0 + 1 + 3 + j] = 0;
+            if((iLeg != 0)&&(iSeg == 0)){ // pos and vel at the beginning of each leg
+                for (int j = 0; j < 3; j++){ 
+                    opt.XL[i0 + 1 + j] = opt.XU[i0 + 1 + j] = 0;
+                    opt.XL[i0 + 1 + 3 + j] = opt.XU[i0 + 1 + 3 + j] = 0;
                 }  
             }
             
             // DV
             if((iSeg == nSeg)||((iSeg == 0)&&(!FB)&&(iLeg != 0))){
-                    LDV = UDV = .0;
+                LDV = UDV = .0;
             }
-            else if((iSeg == 0)&&(FB||(iLeg == 0))){
+            else if((iSeg == 0)&&(iLeg == 0)){
                 LDV = -2;
                 UDV = +2;
+            }
+            else if((iSeg == 0)&&FB){ // when FB = true it is r_infm
+                LDV = -opz.SoI_R/rconv;
+                UDV = +opz.SoI_R/rconv;
             }
             else{
                 LDV = -opz.DVtot_single_max;
@@ -421,7 +427,7 @@ void C_prb_RR_HMS::custom_iteration_process(double *X_current){
 }
 
 void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj){
-    vector<Vector3d> v_infm_vec, v_infp_vec;
+    vector<Vector3d> v_infm_vec, v_infp_vec, r_infm_vec;
     vector<double> r_p_vec;
     MatrixXd eye6x6 = MatrixXd::Identity(6, 6);
     C_UT ut(6);
@@ -465,13 +471,19 @@ void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj){
 
         // v_infp (FB already "performed" in previous cycle)
         FB = false;
-        FB = find(opz.FB_Legs.begin(), opz.FB_Legs.end(), iLeg) != end(opz.FB_Legs);
+        FB = find(opz.FB_Legs.begin(), opz.FB_Legs.end(), iLeg) != end(opz.FB_Legs); // true in the leg right after FB
         if(FB){
             FB_c++;
+            r_infm = DV_k; v_infm = v_infm_vec[FB_c - 1];
+            r_infm_vec.push_back(r_infm);
+
+            ToF_Hyperbola(r_infm, v_infm, mu_FB, ToF);
+
             propagateKEP_U(r0_RV_vector[iLeg - 1], v0_RV_vector[iLeg - 1], ToF, 1, r_G, v_G);
-            v_infp = DV_k - v_G + v_kp; // DV - v_p + v_1
+            propagateKEP_U(r_infm, v_infm, ToF, mu_FB, r_infp, v_infp);
+            // v_infp = DV_k - v_G + v_kp; // DV - v_p + v_1
             v_infp_vec.push_back(v_infp);
-            // Propagate_P_FB(P_km, v_infp_vec[FB_c - 1], v_infp, 929000, opz.mu_FB, P_FB);
+            // Propagate_P_FB(P_km, v_infm_vec[FB_c - 1], v_infp, 929000, opz.mu_FB, P_FB);
             // P_km = P_FB;
         }
 
@@ -528,7 +540,7 @@ void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj){
 
         // v_infm (FB to be "performed" now)
         FBm1 = false;
-        FBm1 = find(opz.FB_Legs.begin(), opz.FB_Legs.end(), iLeg + 1) != end(opz.FB_Legs);
+        FBm1 = find(opz.FB_Legs.begin(), opz.FB_Legs.end(), iLeg + 1) != end(opz.FB_Legs); // it is true in the leg right before FB
         if(FBm1){
             propagateKEP_U(r0_RV_vector[iLeg], v0_RV_vector[iLeg], ToF, 1, r_G, v_G);
             v_infm = v_kp - v_G; // v_1 - v_p
@@ -603,10 +615,16 @@ void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj){
     if(opz.Fixed_ToF_Leg) iG0 += nLeg;
     for(int i; i < opz.FB_Legs.size(); i++){
         v_inf_sqrd = v_infm_vec[i].squaredNorm();
-        theta = acos((v_infm_vec[i]).dot(v_infp_vec[i])/v_inf_sqrd);
-        r_p = opz.mu_FB*(1 - sin(theta/2))/(v_inf_sqrd*vconv*vconv*sin(theta/2));
-        G[iG0 + 2*i] = v_infm_vec[i].norm() - v_infp_vec[i].norm(); // v_infm_vec[i].norm() - v_infp_vec[i].norm()
-        G[iG0 + 2*i + 1] = r_p - opz.r_min; // r_p - opz.r_min
+        r_infm = r_infm_vec[i];
+        a = 1/(2/r_infm.norm() - v_inf_sqrd/mu_FB);
+        E = v_inf_sqrd/2 - mu_FB/r_infm.norm();
+        h_vec = r_infm.cross(v_infm_vec[i]);
+        e = sqrt(1 + 2*E*h_vec.squaredNorm()/pow(mu_FB, 2));
+        theta = 2*asin(1/e);
+        r_p = mu_FB*(1 - sin(theta/2))/(v_inf_sqrd*sin(theta/2));
+        // G[iG0 + 2*i] = v_infm_vec[i].norm() - v_infp_vec[i].norm(); // v_infm_vec[i].norm() - v_infp_vec[i].norm()
+        G[iG0 + 2*i] = r_infm_vec[i].norm() - opz.SoI_R/rconv; // v_infm_vec[i].norm() - v_infp_vec[i].norm()
+        G[iG0 + 2*i + 1] = r_p - opz.r_min/rconv; // r_p - opz.r_min
     }
     if(opz.Limited_ToF) G[opt.m - 1] = ToF - opz.Max_ToF;
     F *= ScaleObj;
@@ -672,14 +690,15 @@ void test_RR_HMS(){
     ofstream trajRV3file("../results/HMS-temp/trajRV3file.dat");
     string fname_savings = "../results/HMS-temp/opt_X.dat";
     string out_opz("../results/HMS-temp/opz.yaml");
-    double F, FLeg, dt, ToF, ToF_Leg, tfin, DVnorm_i, DVstd_i;
-    int nSeg;
+    double F, FLeg, dt, ToF, ToF_Leg, tfin, DVnorm_i, DVstd_i, a, e, E;
+    int nSeg, FB_c;
     F = 0;
     ToF = 0;
+    FB_c = 0;
 
-    Vector3d r_k, v_km, r_k1, v_k1m, v_kp, DV_i, v_infp, v_infm, r_G, v_G;
+    Vector3d r_k, v_km, r_k1, v_k1m, v_kp, DV_i, v_infm, v_infp, r_G, v_G, r_infm, r_infp, h_vec;
     MatrixXd P_km(6, 6), P_k1m(6, 6), P_kp(6, 6), Qd_k(6, 6), cov_DV_i(6, 6), KK_i(3, 6), KKaug_i(6, 6);
-    vector<Vector3d> v_infm_vec, v_infp_vec;
+    vector<Vector3d> v_infm_vec, v_infp_vec, r_infm_vec;
 
     vector<double> v_DVnorm, v_DVstd, ToF_par;
     C_KeplerMultiArc trajE, trajRV1, trajRV3;
@@ -725,8 +744,18 @@ void test_RR_HMS(){
                 FB = false;
                 FB = find(prb.opz.FB_Legs.begin(), prb.opz.FB_Legs.end(), iLeg) != end(prb.opz.FB_Legs);
                 if(FB){
+                    FB_c++;
                     propagateKEP_U(prb.r0_RV_vector[iLeg - 1], prb.v0_RV_vector[iLeg - 1], ToF, 1, r_G, v_G);
-                    v_infp = DV_i - v_G + v_kp;
+                    // v_infp = DV_i - v_G + v_kp;
+                    // v_infp_vec.push_back(v_infp);
+
+                    r_infm = DV_i; v_infm = v_infm_vec[FB_c - 1];
+                    r_infm_vec.push_back(r_infm);
+
+                    ToF_Hyperbola(r_infm, v_infm, prb.opz.mu_FB, ToF);
+
+                    propagateKEP_U(r_infm, v_infm, ToF, prb.opz.mu_FB, r_infp, v_infp);
+                    // v_infp = DV_k - v_G + v_kp; // DV - v_p + v_1
                     v_infp_vec.push_back(v_infp);
                 }
             }
@@ -820,7 +849,14 @@ void test_RR_HMS(){
             double v_inf_sqrd, theta, r_p;
             for(int i; i < prb.opz.FB_Legs.size(); i++){
                 v_inf_sqrd = v_infm_vec[i].squaredNorm();
-                theta = acos((v_infm_vec[i]).dot(v_infp_vec[i])/v_inf_sqrd);
+                r_infm = r_infm_vec[i];
+                a = 1/(2/r_infm.norm() - v_inf_sqrd/prb.opz.mu_FB);
+                E = v_inf_sqrd/2 - prb.opz.mu_FB/r_infm.norm();
+                h_vec = r_infm.cross(v_infm_vec[i]);
+                e = sqrt(1 + 2*E*h_vec.squaredNorm()/pow(prb.opz.mu_FB, 2));
+                theta = 2*asin(1/e);
+                r_p = prb.opz.mu_FB*(1 - sin(theta/2))/(v_inf_sqrd*sin(theta/2));
+
                 r_p = prb.opz.mu_FB*(1 - sin(theta/2))/(v_inf_sqrd*prb.opz.vconv*prb.opz.vconv*sin(theta/2));
                 Propagate_P_FB(P_km, v_infm_vec[i], v_infp_vec[i], prb.opz.SoI_R/prb.opz.rconv, prb.opz.mu_FB/prb.opz.mu_primary, P_km);
                 out_sommario << "FB #" << i + 1 << ":" << endl;

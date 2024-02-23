@@ -1,4 +1,4 @@
-# Install script for directory: /home/spectral01/MARMO/HMS_AFC
+# Install script for directory: /home/spectral03/Documenti/MARMO/HMS_AFC
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/spectral01/MARMO/HMS_AFC/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/spectral03/Documenti/MARMO/HMS_AFC/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

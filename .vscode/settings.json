@@ -55,6 +55,7 @@
         "cinttypes": "cpp",
         "typeinfo": "cpp",
         "random": "cpp",
-        "bit": "cpp"
+        "bit": "cpp",
+        "numbers": "cpp"
     }
 }

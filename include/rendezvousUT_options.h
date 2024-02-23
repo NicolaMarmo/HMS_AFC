@@ -10,7 +10,7 @@
 #pragma warning(disable: 4251)
 #pragma warning(disable: 4275)
  
-#include<eigen3/Eigen/Dense>
+#include<Eigen/Dense>
 using Eigen::Vector3d;
 using Eigen::VectorXd;
 using Eigen::Matrix3d;

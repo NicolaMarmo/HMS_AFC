@@ -1,14 +1,14 @@
 #ifndef H_C_SIM_ODE
 #define H_C_SIM_ODE
 
-# include <cmath>
-# include <cstdlib>
-# include <iomanip>
-# include <fstream>
-# include <iostream>
+#include <cmath>
+#include <cstdlib>
+#include <iomanip>
+#include <fstream>
+#include <iostream>
 #include <vector>
 
-#include<eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 using Eigen::VectorXd;
 using Eigen::MatrixXd;
 

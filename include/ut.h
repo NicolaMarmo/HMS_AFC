@@ -1,12 +1,12 @@
 #pragma once
-#include<eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 
 using Eigen::Vector3d;
 using Eigen::VectorXd;
 using Eigen::Matrix3d;
 using Eigen::MatrixXd;
 
-#include<iostream>
+#include <iostream>
 using namespace std;
 
 #include "twoBP_lite.h"
@@ -198,3 +198,5 @@ class EoM_Kepler_ODE_STM{
 
 void Propagate_P_FB(const MatrixXd& P0, const Vector3d& v_infm, const Vector3d& v_infp, const double SoI_R, const double mu,
     MatrixXd Pf);
+
+void ToF_Hyperbola(const Vector3d r_infm, const Vector3d v_infm, const double mu, double& ToF);

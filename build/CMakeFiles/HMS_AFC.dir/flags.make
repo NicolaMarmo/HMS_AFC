@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/g++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/usr/local/include/eigen3
+CXX_INCLUDES = -I/usr/local/include/Eigen
 
 CXX_FLAGS =  -fopenmp -g -O3 -w -fopenmp -std=c++11 -std=gnu++11
 

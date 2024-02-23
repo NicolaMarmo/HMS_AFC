@@ -8,11 +8,11 @@
 
 #include "aux_covariance.h"
 
-#include<worhp/worhp.h>
-#include<vector>
+#include <worhp/worhp.h>
+#include <vector>
 #include <numeric> //accumulate
 
-#include<eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 using Eigen::Vector3d;
 using Eigen::VectorXd;
 using Eigen::Matrix3d;
@@ -47,8 +47,9 @@ class C_prb_RR_HMS
     MatrixXd P0;
     Vector3d r0, v0, rf, vf; 
     Vector3d rRV, vRV;
-    Vector3d r_G, v_G;
+    Vector3d r_G, v_G, r_infp, v_infp, r_infm, v_infm, h_vec;
     Vector3d r0_X, v0_X; 
+    double a, e, E, hn, mu_FB, coshF, sinhF, F;
 
     double sigma2_r_G, sigma2_v_G;
 

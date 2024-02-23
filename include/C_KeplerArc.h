@@ -1,10 +1,10 @@
 #pragma once
 #include "ut.h"
 
-#include<vector>
+#include <vector>
 #include <numeric> //accumulate
 
-#include<eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 using Eigen::Vector3d;
 using Eigen::VectorXd;
 using Eigen::Matrix3d;
