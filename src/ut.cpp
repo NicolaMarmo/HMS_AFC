@@ -273,14 +273,14 @@ void Propagate_P_FB(const MatrixXd& P0, const Vector3d& v_infm, const Vector3d& 
     double sinhF = sqrt(pow(coshF, 2) - 1);
     double F = log(coshF + sqrt(pow(coshF, 2) - 1));
     double DT = 2*sqrt(-pow(a, 3)/mu)*(e*sinhF - F); // DA CONVERTIRE QUANDO USATO NEL ROCP
-    cout << "sinhF = " << sinhF << endl;
-    cout << "coshF = " << coshF << endl;
-    cout << "F = " << F << endl;
-    cout << "cosni = " << cosni << endl;
-    cout << "e = " << e << endl;
-    cout << "a = " << a << endl;
-    cout << "D = " << D << endl;
-    cout << "theta = " << theta << endl;
+    // cout << "sinhF = " << sinhF << endl;
+    // cout << "coshF = " << coshF << endl;
+    // cout << "F = " << F << endl;
+    // cout << "cosni = " << cosni << endl;
+    // cout << "e = " << e << endl;
+    // cout << "a = " << a << endl;
+    // cout << "D = " << D << endl;
+    // cout << "theta = " << theta << endl;
 
     Vector3d r0, v0, v_infm_ver, v_infp_ver, z, z_ver;
     MatrixXd R(3, 3), RM(6, 6), P0R(6, 6), PfR(6, 6);
@@ -298,17 +298,17 @@ void Propagate_P_FB(const MatrixXd& P0, const Vector3d& v_infm, const Vector3d& 
     P0R = RM.transpose()*P0*RM;
     Pf_STM(r0, v0, P0R, DT, mu, MatrixXd::Zero(6, 6), PfR);
     Pf = RM*PfR*RM.transpose();
-    cout << "P0 = " << endl << P0 << endl;
-    cout << "R = " << endl << R << endl;
-    cout << "RM = " << endl << RM << endl;
-    cout << "P0R = " << endl << P0R << endl;
-    cout << "PfR = " << endl << PfR << endl;
-    cout << "v_infm_ver = " << v_infm_ver << endl;
-    cout << "Pf = " << endl << Pf << endl;
-    cout << "DT = " << DT << endl;
+    // cout << "P0 = " << endl << P0 << endl;
+    // cout << "R = " << endl << R << endl;
+    // cout << "RM = " << endl << RM << endl;
+    // cout << "P0R = " << endl << P0R << endl;
+    // cout << "PfR = " << endl << PfR << endl;
+    // cout << "v_infm_ver = " << v_infm_ver << endl;
+    // cout << "Pf = " << endl << Pf << endl;
+    // cout << "DT = " << DT << endl;
 };
 
-void ToF_Hyperbola(const Vector3d r_infm, const Vector3d v_infm, const double mu, double& ToF){
+void ToF_Hyperbola(const Vector3d r_infm, const Vector3d v_infm, const double mu, double& DT){
     double a = 1/(2/r_infm.norm() - v_infm.squaredNorm()/mu);
     double E = v_infm.squaredNorm()/2 - mu/r_infm.norm();
     Vector3d h_vec = r_infm.cross(v_infm);
@@ -316,5 +316,9 @@ void ToF_Hyperbola(const Vector3d r_infm, const Vector3d v_infm, const double mu
     double coshF = (a - r_infm.norm())/(a*e); 
     double sinhF = sqrt(pow(coshF, 2) - 1);
     double F = log(coshF + sqrt(pow(coshF, 2) - 1));
-    ToF = 2*sqrt(-pow(a, 3)/mu)*(e*sinhF - F);
+    DT = 2*sqrt(-pow(a, 3)/mu)*(e*sinhF - F);
+    if(isnan(DT)){DT = 0;}
+    // cout << "a = " << a << endl;
+    // cout << "e = " << e << endl;
+    // cout << "ToF = " << ToF << endl;
 }

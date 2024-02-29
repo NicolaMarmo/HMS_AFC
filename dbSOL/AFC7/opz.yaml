@@ -21,6 +21,8 @@ mission:
   output_folder: AFC7/
   firstguess_folder: AFC9/
   muPrimary: 132712440018
+  mu_FB: 398600.44179999997
+  SoI_R: 929000
 
   r0_dim:
     - -103686080.376283

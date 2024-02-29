@@ -1,8 +1,8 @@
 CMakeFiles/HMS_AFC.dir/src/C_KeplerArc.cpp.o: \
- /home/spectral03/Documenti/MARMO/HMS_AFC/src/C_KeplerArc.cpp \
+ /home/spectral03/MARMO/HMS_AFC/src/C_KeplerArc.cpp \
  /usr/include/stdc-predef.h \
- /home/spectral03/Documenti/MARMO/HMS_AFC/src/../include/C_KeplerArc.h \
- /home/spectral03/Documenti/MARMO/HMS_AFC/src/../include/ut.h \
+ /home/spectral03/MARMO/HMS_AFC/src/../include/C_KeplerArc.h \
+ /home/spectral03/MARMO/HMS_AFC/src/../include/ut.h \
  /usr/local/include/Eigen/Dense /usr/local/include/Eigen/Core \
  /usr/local/include/Eigen/src/Core/util/DisableStupidWarnings.h \
  /usr/local/include/Eigen/src/Core/util/Macros.h \
@@ -382,8 +382,8 @@ CMakeFiles/HMS_AFC.dir/src/C_KeplerArc.cpp.o: \
  /usr/local/include/Eigen/src/Eigenvalues/RealQZ.h \
  /usr/local/include/Eigen/src/Eigenvalues/MatrixBaseEigenvalues.h \
  /usr/include/c++/11/iostream \
- /home/spectral03/Documenti/MARMO/HMS_AFC/src/../include/twoBP_lite.h \
- /home/spectral03/Documenti/MARMO/HMS_AFC/src/../include/rk4_vector.h \
+ /home/spectral03/MARMO/HMS_AFC/src/../include/twoBP_lite.h \
+ /home/spectral03/MARMO/HMS_AFC/src/../include/rk4_vector.h \
  /usr/include/c++/11/iomanip /usr/include/c++/11/locale \
  /usr/include/c++/11/bits/locale_facets_nonio.h /usr/include/c++/11/ctime \
  /usr/include/x86_64-linux-gnu/c++/11/bits/time_members.h \
@@ -399,6 +399,6 @@ CMakeFiles/HMS_AFC.dir/src/C_KeplerArc.cpp.o: \
  /usr/include/c++/11/bits/stl_vector.h \
  /usr/include/c++/11/bits/stl_bvector.h \
  /usr/include/c++/11/bits/vector.tcc \
- /home/spectral03/Documenti/MARMO/HMS_AFC/src/../include/ode.hpp \
- /home/spectral03/Documenti/MARMO/HMS_AFC/src/../include/C_sim_ode.h \
+ /home/spectral03/MARMO/HMS_AFC/src/../include/ode.hpp \
+ /home/spectral03/MARMO/HMS_AFC/src/../include/C_sim_ode.h \
  /usr/include/c++/11/numeric /usr/include/c++/11/bits/stl_numeric.h

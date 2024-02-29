@@ -398,7 +398,7 @@ int C_prb_RR_HMS::setup_worph(double *Xguess){
     if(opz.E_Pf_constraint) iG0 += 6*nLeg;
     if(opz.Fixed_ToF_Leg) iG0 += nLeg;
     for(int i; i < opz.FB_Legs.size(); i++){
-        opt.GL[iG0 + 2*i] = opt.GU[iG0 + 2*i] = 0; // norm(v_inf-) = norm(v_inf+)
+        opt.GL[iG0 + 2*i] = opt.GU[iG0 + 2*i] = 0; // |r_infm| = SoI_R
         opt.GL[iG0 + 2*i + 1] = 0; // r_p >= r_p_min
         opt.GU[iG0 + 2*i + 1] = opz.SoI_R; // SoI radius
     }
@@ -418,7 +418,7 @@ int C_prb_RR_HMS::setup_worph(double *Xguess){
     // for(int i = 0; i < opt.n; i++){
     //     cout << "XU[" << i << "] = " << opt.XU[i] << endl;
     // }
-    cin.get();
+    // cin.get();
     return 0;
 }
 
@@ -431,13 +431,13 @@ void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj){
     vector<double> r_p_vec;
     MatrixXd eye6x6 = MatrixXd::Identity(6, 6);
     C_UT ut(6);
-    MatrixXd P_k1m(6, 6), P_km(6, 6), P_kp(6, 6), covDV(3, 3), KK_k(3, 6), KKaug_k(6, 6), P_k1m_hat(6, 6), KK_k1(3, 6), P_FB(6, 6);
+    MatrixXd P_k1m(6, 6), P_km(6, 6), P_kp(6, 6), covDV(3, 3), KK_k(3, 6), KKaug_k(6, 6), P_k1m_hat(6, 6), KK_k1(3, 6), Pf(6, 6);
     Vector3d r_km, v_km, r_k1m, v_k1m, v_kp, v_k1p, DV_k, DV_k1, r_k1_hat, v_k1m_hat, Pf_ev_r, Pf_ev_v, v_infp, v_infm;
 
     F = 0;
     
     int nSeg, FB_c;
-    double tfin, Np1L, dt, T, ToF, theta, e, a, v_inf_sqrd, r_p;
+    double tfin, Np1L, dt, T, ToF, theta, e, a, v_inf_sqrd, r_p, DT;
     ToF = 0;
     FB_c = 0;
     bool FB, FBm1;
@@ -477,18 +477,22 @@ void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj){
             r_infm = DV_k; v_infm = v_infm_vec[FB_c - 1];
             r_infm_vec.push_back(r_infm);
 
-            ToF_Hyperbola(r_infm, v_infm, mu_FB, ToF);
+            ToF_Hyperbola(r_infm, v_infm, mu_FB, DT);
 
             propagateKEP_U(r0_RV_vector[iLeg - 1], v0_RV_vector[iLeg - 1], ToF, 1, r_G, v_G);
-            propagateKEP_U(r_infm, v_infm, ToF, mu_FB, r_infp, v_infp);
+            propagateKEP_U(r_infm, v_infm, DT, mu_FB, r_infp, v_infp);
             // v_infp = DV_k - v_G + v_kp; // DV - v_p + v_1
             v_infp_vec.push_back(v_infp);
-            // Propagate_P_FB(P_km, v_infm_vec[FB_c - 1], v_infp, 929000, opz.mu_FB, P_FB);
-            // P_km = P_FB;
+            // cout << "DT" << DT << endl;
+            // cout << "P_km: " << P_km.eigenvalues().real().maxCoeff() << endl;
+            Pf_STM(r_infm, v_infm, P_km, DT, mu_FB, MatrixXd::Zero(6, 6), Pf);
+            // cout << "Pf: " << Pf.eigenvalues().real().maxCoeff() << endl; cin.get();
+
+            P_km = Pf;
         }
 
         // apply DV
-        v_kp = v_km + DV_k;
+        if(!FB){v_kp = v_km + DV_k;}
         P_kp = (eye6x6 + KKaug_k) * P_km * (eye6x6 + KKaug_k).transpose();
         covDV = KK_k*P_km*KK_k.transpose();
 
@@ -623,7 +627,7 @@ void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj){
         theta = 2*asin(1/e);
         r_p = mu_FB*(1 - sin(theta/2))/(v_inf_sqrd*sin(theta/2));
         // G[iG0 + 2*i] = v_infm_vec[i].norm() - v_infp_vec[i].norm(); // v_infm_vec[i].norm() - v_infp_vec[i].norm()
-        G[iG0 + 2*i] = r_infm_vec[i].norm() - opz.SoI_R/rconv; // v_infm_vec[i].norm() - v_infp_vec[i].norm()
+        G[iG0 + 2*i] = r_infm.norm() - opz.SoI_R/rconv; // |r_infm| = SoI_R
         G[iG0 + 2*i + 1] = r_p - opz.r_min/rconv; // r_p - opz.r_min
     }
     if(opz.Limited_ToF) G[opt.m - 1] = ToF - opz.Max_ToF;
@@ -690,14 +694,15 @@ void test_RR_HMS(){
     ofstream trajRV3file("../results/HMS-temp/trajRV3file.dat");
     string fname_savings = "../results/HMS-temp/opt_X.dat";
     string out_opz("../results/HMS-temp/opz.yaml");
-    double F, FLeg, dt, ToF, ToF_Leg, tfin, DVnorm_i, DVstd_i, a, e, E;
+    double F, FLeg, dt, ToF, ToF_Leg, tfin, DVnorm_i, DVstd_i, a, e, E, DT, mu_FB;
     int nSeg, FB_c;
     F = 0;
     ToF = 0;
     FB_c = 0;
+    mu_FB = prb.opz.mu_FB/prb.opz.mu_primary;
 
-    Vector3d r_k, v_km, r_k1, v_k1m, v_kp, DV_i, v_infm, v_infp, r_G, v_G, r_infm, r_infp, h_vec;
-    MatrixXd P_km(6, 6), P_k1m(6, 6), P_kp(6, 6), Qd_k(6, 6), cov_DV_i(6, 6), KK_i(3, 6), KKaug_i(6, 6);
+    Vector3d r_k, v_km, r_k1, v_k1m, v_kp, DV_i, r_infm, v_infm, v_infp, r_G, v_G, r_infp, h_vec;
+    MatrixXd P_km(6, 6), P_k1m(6, 6), P_kp(6, 6), Qd_k(6, 6), cov_DV_i(6, 6), KK_i(3, 6), KKaug_i(6, 6), Pf(6, 6);
     vector<Vector3d> v_infm_vec, v_infp_vec, r_infm_vec;
 
     vector<double> v_DVnorm, v_DVstd, ToF_par;
@@ -745,23 +750,28 @@ void test_RR_HMS(){
                 FB = find(prb.opz.FB_Legs.begin(), prb.opz.FB_Legs.end(), iLeg) != end(prb.opz.FB_Legs);
                 if(FB){
                     FB_c++;
-                    propagateKEP_U(prb.r0_RV_vector[iLeg - 1], prb.v0_RV_vector[iLeg - 1], ToF, 1, r_G, v_G);
-                    // v_infp = DV_i - v_G + v_kp;
-                    // v_infp_vec.push_back(v_infp);
-
                     r_infm = DV_i; v_infm = v_infm_vec[FB_c - 1];
                     r_infm_vec.push_back(r_infm);
 
-                    ToF_Hyperbola(r_infm, v_infm, prb.opz.mu_FB, ToF);
+                    ToF_Hyperbola(r_infm, v_infm, mu_FB, DT);
 
-                    propagateKEP_U(r_infm, v_infm, ToF, prb.opz.mu_FB, r_infp, v_infp);
+                    propagateKEP_U(prb.r0_RV_vector[iLeg - 1], prb.v0_RV_vector[iLeg - 1], ToF, 1, r_G, v_G);
+                    propagateKEP_U(r_infm, v_infm, DT, mu_FB, r_infp, v_infp);
                     // v_infp = DV_k - v_G + v_kp; // DV - v_p + v_1
                     v_infp_vec.push_back(v_infp);
+                    // cout << "iSeg = " << iSeg << endl;
+                    // cout << "r_infm = " << r_infm.transpose() << endl;
+                    // cout << "v_infm = " << v_infm.transpose() << endl;
+                    // cout << "DT = " << DT << endl;
+                    // cout << "mu_FB = " << prb.opz.mu_FB << endl;
+                    Pf_STM(r_infm, v_infm, P_km, DT, mu_FB, MatrixXd::Zero(6, 6), Pf);
+                    // cout << "Pf = " << Pf << endl;
+                    P_km = Pf;
                 }
             }
 
             // Apply DV
-            v_kp = v_km + DV_i;
+            if(!FB){v_kp = v_km + DV_i;}
             P_kp = (eye6 + KKaug_i) * P_km * (eye6 + KKaug_i).transpose();
             cov_DV_i = KK_i*P_km*KK_i.transpose();
 
@@ -789,9 +799,7 @@ void test_RR_HMS(){
             out_sommario << fixed << setw(2) << setprecision(8) << iSeg << scientific << setw(2) << setprecision(5) << P_kp.diagonal().transpose() << endl;
             out_sommario << endl;
 
-            if (iSeg != nSeg){
-                // propagate
-                
+            if (iSeg != nSeg){                
                 // Vector3d r_k1_hat, v_k1m_hat;  MatrixXd P_k1m_hat;
                 propagate_kepler_UT(r_k, v_kp, P_kp, dt, 1., Qd_k, r_k1, v_k1m, P_k1m);
                 traj.add_keplerArc(C_KeplerArc(r_k, v_kp, ToF, dt));
@@ -850,17 +858,17 @@ void test_RR_HMS(){
             for(int i; i < prb.opz.FB_Legs.size(); i++){
                 v_inf_sqrd = v_infm_vec[i].squaredNorm();
                 r_infm = r_infm_vec[i];
-                a = 1/(2/r_infm.norm() - v_inf_sqrd/prb.opz.mu_FB);
-                E = v_inf_sqrd/2 - prb.opz.mu_FB/r_infm.norm();
+                a = 1/(2/r_infm.norm() - v_inf_sqrd/mu_FB);
+                E = v_inf_sqrd/2 - mu_FB/r_infm.norm();
                 h_vec = r_infm.cross(v_infm_vec[i]);
-                e = sqrt(1 + 2*E*h_vec.squaredNorm()/pow(prb.opz.mu_FB, 2));
+                e = sqrt(1 + 2*E*h_vec.squaredNorm()/pow(mu_FB, 2));
                 theta = 2*asin(1/e);
-                r_p = prb.opz.mu_FB*(1 - sin(theta/2))/(v_inf_sqrd*sin(theta/2));
+                r_p = mu_FB*(1 - sin(theta/2))/(v_inf_sqrd*prb.opz.vconv*prb.opz.vconv*sin(theta/2));
 
-                r_p = prb.opz.mu_FB*(1 - sin(theta/2))/(v_inf_sqrd*prb.opz.vconv*prb.opz.vconv*sin(theta/2));
-                Propagate_P_FB(P_km, v_infm_vec[i], v_infp_vec[i], prb.opz.SoI_R/prb.opz.rconv, prb.opz.mu_FB/prb.opz.mu_primary, P_km);
                 out_sommario << "FB #" << i + 1 << ":" << endl;
                 out_sommario << "r_p = " << r_p << endl;
+                out_sommario << "|r_infm| = " << prb.opz.rconv*r_infm.norm() << endl;
+                out_sommario << "r_infm = " << r_infm[0] << " " << r_infm[1] << " " << r_infm[2] << endl;
                 out_sommario << "v_infm = " << v_infm_vec[i][0] << " " << v_infm_vec[i][1] << " " << v_infm_vec[i][2] << endl;
                 out_sommario << "v_infp = " << v_infp_vec[i][0] << " " << v_infp_vec[i][1] << " " << v_infp_vec[i][2] << endl;
                 out_sommario << "|v_infm| = " << v_infm_vec[i].norm() << endl;

@@ -229,7 +229,7 @@ class C_prb_RR_HMS
     void load_sol(string fname, double* Xguess)
     {
         std::string ans;
-        cout << "caricare il file soluzione? (S/n)" << endl;
+        cout << "caricare il file soluzione? (s/n)" << endl;
         cin >> ans;
         if (ans.compare("S") == 0 || ans.compare("s") == 0)
         {

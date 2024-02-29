@@ -1,7 +1,7 @@
 CMakeFiles/HMS_AFC.dir/src/aux_covariance.cpp.o: \
- /home/spectral03/Documenti/MARMO/HMS_AFC/src/aux_covariance.cpp \
+ /home/spectral03/MARMO/HMS_AFC/src/aux_covariance.cpp \
  /usr/include/stdc-predef.h \
- /home/spectral03/Documenti/MARMO/HMS_AFC/src/../include/aux_covariance.h \
+ /home/spectral03/MARMO/HMS_AFC/src/../include/aux_covariance.h \
  /usr/local/include/Eigen/Dense /usr/local/include/Eigen/Core \
  /usr/local/include/Eigen/src/Core/util/DisableStupidWarnings.h \
  /usr/local/include/Eigen/src/Core/util/Macros.h \

@@ -1,37 +1,37 @@
 [
 {
-  "directory": "/home/spectral03/Documenti/MARMO/HMS_AFC/build",
-  "command": "/usr/bin/g++  -I/usr/local/include/Eigen  -fopenmp -g -O3 -w -fopenmp -std=c++11 -std=gnu++11 -o CMakeFiles/HMS_AFC.dir/src/main.cpp.o -c /home/spectral03/Documenti/MARMO/HMS_AFC/src/main.cpp",
-  "file": "/home/spectral03/Documenti/MARMO/HMS_AFC/src/main.cpp"
+  "directory": "/home/spectral03/MARMO/HMS_AFC/build",
+  "command": "/usr/bin/g++  -I/usr/local/include/Eigen  -fopenmp -g -O3 -w -fopenmp -std=c++11 -std=gnu++11 -o CMakeFiles/HMS_AFC.dir/src/main.cpp.o -c /home/spectral03/MARMO/HMS_AFC/src/main.cpp",
+  "file": "/home/spectral03/MARMO/HMS_AFC/src/main.cpp"
 },
 {
-  "directory": "/home/spectral03/Documenti/MARMO/HMS_AFC/build",
-  "command": "/usr/bin/g++  -I/usr/local/include/Eigen  -fopenmp -g -O3 -w -fopenmp -std=c++11 -std=gnu++11 -o CMakeFiles/HMS_AFC.dir/src/ut.cpp.o -c /home/spectral03/Documenti/MARMO/HMS_AFC/src/ut.cpp",
-  "file": "/home/spectral03/Documenti/MARMO/HMS_AFC/src/ut.cpp"
+  "directory": "/home/spectral03/MARMO/HMS_AFC/build",
+  "command": "/usr/bin/g++  -I/usr/local/include/Eigen  -fopenmp -g -O3 -w -fopenmp -std=c++11 -std=gnu++11 -o CMakeFiles/HMS_AFC.dir/src/ut.cpp.o -c /home/spectral03/MARMO/HMS_AFC/src/ut.cpp",
+  "file": "/home/spectral03/MARMO/HMS_AFC/src/ut.cpp"
 },
 {
-  "directory": "/home/spectral03/Documenti/MARMO/HMS_AFC/build",
-  "command": "/usr/bin/g++  -I/usr/local/include/Eigen  -fopenmp -g -O3 -w -fopenmp -std=c++11 -std=gnu++11 -o CMakeFiles/HMS_AFC.dir/src/aux_covariance.cpp.o -c /home/spectral03/Documenti/MARMO/HMS_AFC/src/aux_covariance.cpp",
-  "file": "/home/spectral03/Documenti/MARMO/HMS_AFC/src/aux_covariance.cpp"
+  "directory": "/home/spectral03/MARMO/HMS_AFC/build",
+  "command": "/usr/bin/g++  -I/usr/local/include/Eigen  -fopenmp -g -O3 -w -fopenmp -std=c++11 -std=gnu++11 -o CMakeFiles/HMS_AFC.dir/src/aux_covariance.cpp.o -c /home/spectral03/MARMO/HMS_AFC/src/aux_covariance.cpp",
+  "file": "/home/spectral03/MARMO/HMS_AFC/src/aux_covariance.cpp"
 },
 {
-  "directory": "/home/spectral03/Documenti/MARMO/HMS_AFC/build",
-  "command": "/usr/bin/g++  -I/usr/local/include/Eigen  -fopenmp -g -O3 -w -fopenmp -std=c++11 -std=gnu++11 -o CMakeFiles/HMS_AFC.dir/src/C_KeplerArc.cpp.o -c /home/spectral03/Documenti/MARMO/HMS_AFC/src/C_KeplerArc.cpp",
-  "file": "/home/spectral03/Documenti/MARMO/HMS_AFC/src/C_KeplerArc.cpp"
+  "directory": "/home/spectral03/MARMO/HMS_AFC/build",
+  "command": "/usr/bin/g++  -I/usr/local/include/Eigen  -fopenmp -g -O3 -w -fopenmp -std=c++11 -std=gnu++11 -o CMakeFiles/HMS_AFC.dir/src/C_KeplerArc.cpp.o -c /home/spectral03/MARMO/HMS_AFC/src/C_KeplerArc.cpp",
+  "file": "/home/spectral03/MARMO/HMS_AFC/src/C_KeplerArc.cpp"
 },
 {
-  "directory": "/home/spectral03/Documenti/MARMO/HMS_AFC/build",
-  "command": "/usr/bin/g++  -I/usr/local/include/Eigen  -fopenmp -g -O3 -w -fopenmp -std=c++11 -std=gnu++11 -o CMakeFiles/HMS_AFC.dir/src/rendezvousUT_options.cpp.o -c /home/spectral03/Documenti/MARMO/HMS_AFC/src/rendezvousUT_options.cpp",
-  "file": "/home/spectral03/Documenti/MARMO/HMS_AFC/src/rendezvousUT_options.cpp"
+  "directory": "/home/spectral03/MARMO/HMS_AFC/build",
+  "command": "/usr/bin/g++  -I/usr/local/include/Eigen  -fopenmp -g -O3 -w -fopenmp -std=c++11 -std=gnu++11 -o CMakeFiles/HMS_AFC.dir/src/rendezvousUT_options.cpp.o -c /home/spectral03/MARMO/HMS_AFC/src/rendezvousUT_options.cpp",
+  "file": "/home/spectral03/MARMO/HMS_AFC/src/rendezvousUT_options.cpp"
 },
 {
-  "directory": "/home/spectral03/Documenti/MARMO/HMS_AFC/build",
-  "command": "/usr/bin/g++  -I/usr/local/include/Eigen  -fopenmp -g -O3 -w -fopenmp -std=c++11 -std=gnu++11 -o CMakeFiles/HMS_AFC.dir/src/C_prb_RR_HMS.cpp.o -c /home/spectral03/Documenti/MARMO/HMS_AFC/src/C_prb_RR_HMS.cpp",
-  "file": "/home/spectral03/Documenti/MARMO/HMS_AFC/src/C_prb_RR_HMS.cpp"
+  "directory": "/home/spectral03/MARMO/HMS_AFC/build",
+  "command": "/usr/bin/g++  -I/usr/local/include/Eigen  -fopenmp -g -O3 -w -fopenmp -std=c++11 -std=gnu++11 -o CMakeFiles/HMS_AFC.dir/src/C_prb_RR_HMS.cpp.o -c /home/spectral03/MARMO/HMS_AFC/src/C_prb_RR_HMS.cpp",
+  "file": "/home/spectral03/MARMO/HMS_AFC/src/C_prb_RR_HMS.cpp"
 },
 {
-  "directory": "/home/spectral03/Documenti/MARMO/HMS_AFC/build",
-  "command": "/usr/bin/g++  -I/usr/local/include/Eigen  -fopenmp -g -O3 -w -fopenmp -std=c++11 -std=gnu++11 -o CMakeFiles/HMS_AFC.dir/src/ode.cpp.o -c /home/spectral03/Documenti/MARMO/HMS_AFC/src/ode.cpp",
-  "file": "/home/spectral03/Documenti/MARMO/HMS_AFC/src/ode.cpp"
+  "directory": "/home/spectral03/MARMO/HMS_AFC/build",
+  "command": "/usr/bin/g++  -I/usr/local/include/Eigen  -fopenmp -g -O3 -w -fopenmp -std=c++11 -std=gnu++11 -o CMakeFiles/HMS_AFC.dir/src/ode.cpp.o -c /home/spectral03/MARMO/HMS_AFC/src/ode.cpp",
+  "file": "/home/spectral03/MARMO/HMS_AFC/src/ode.cpp"
 }
 ]

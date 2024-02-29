@@ -6,7 +6,7 @@ solver:
   nLeg:     4
 
   sf:       1
-  Max_iter: 10000
+  Max_iter: 0000
   
   E_DV_cstr:          true           # true | false                                                   
   E_Pf_constraint:    false           # true | false                                                
@@ -18,8 +18,8 @@ solver:
   Equal_Segment_ToF:  false           # true | false                                               
 
 mission:
-  output_folder: "AFC7/"
-  firstguess_folder: "AFC9/" # type "d" for default folder "results/HMS-temp", otherwise type a folder in "dbSOL/"
+  output_folder: "AFC10/"
+  firstguess_folder: "AFC10/" # type "d" for default folder "results/HMS-temp", otherwise type a folder in "dbSOL/"
   muPrimary: 132712440018                     # [km^3/s^2]
   mu_FB: 398600.4418
   SoI_R: 929000 # [km]

@@ -8,19 +8,20 @@ using namespace std;
 
 int main(){
     // Hybrid Multi Shooting
-    //test_RR_HMS();
-    MatrixXd P0(6, 6), Pf(6, 6);
-    Vector3d v_infm, v_infp, r_infm, r_infp;
-    double ToF;
-    r_infm << -778347.923501835,	-439171.761750917,	-253563.372835403;
-    v_infm <<  2.16500000000000,	1.08250000000000,	0.625000000000000;
-    v_infp << -1.84769317509121,	1.45832611672181,	0.841989674781640;
-    P0.diagonal() << 2.5e7, 2.5e7, 2.5e7, 1e-6, 1e-6, 1e-6;
-    Propagate_P_FB(P0, v_infm, v_infp, 929000, 3.986004418e5, Pf);
-    ToF_Hyperbola(r_infm, v_infm, 3.986004418e5, ToF);
-    propagateKEP_U(r_infm/1.5095e+08, v_infm/29.6510, 6.637443485871841e+05/5.0909e+06, 3.986004418e5/132712440018, r_infp, v_infp);
-    cout << "r_infp = " << r_infp.transpose() << endl;
-    cout << "v_infp = " << v_infp.transpose() << endl;
+    test_RR_HMS();
+    // MatrixXd P0(6, 6), Pf(6, 6);
+    // Vector3d v_infm, v_infp, r_infm, r_infp;
+    // double ToF;
+    // r_infm << -778347.923501835,   -439171.761750917,   -253563.372835403;
+    // v_infm <<  2.16500000000000,    1.08250000000000, 	 0.625000000000000;
+    // v_infp << -1.84769317509121,    1.45832611672181,	 0.841989674781640;
+    // P0.diagonal() << 2.5e7/1.5095e+08, 2.5e7/1.5095e+08, 2.5e7/1.5095e+08, 1e-6/29.6510, 1e-6/29.6510, 1e-6/29.6510;
+    // // Propagate_P_FB(P0, v_infm, v_infp, 929000, 3.986004418e5, Pf);
+    // ToF_Hyperbola(r_infm, v_infm, 3.986004418e5, ToF);
+    // propagateKEP_U(r_infm/1.5095e+08, v_infm/29.6510, 6.637443485871841e+05/5.0909e+06, 3.986004418e5/132712440018, r_infp, v_infp);
+    // Pf_STM(r_infm/1.5095e+08, v_infm/29.6510, P0, 0, 3.986004418e5/132712440018, MatrixXd::Zero(6, 6), Pf);
+    // cout << "P0 = " << endl << P0 << endl;
+    // cout << "Pf = " << endl << Pf << endl;
 
     // Vector3d r0, v0;
     // MatrixXd P0(6, 6), Pf(6, 6);
