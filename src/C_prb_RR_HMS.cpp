@@ -206,7 +206,7 @@ int C_prb_RR_HMS::setup_worph(double *Xguess){
 
     if(opz.Fixed_ToF_Leg) opt.m += nLeg; // ToF of each leg is fixed
 
-    opt.m += 2*opz.FB_Legs.size();        // FB constraints (norm(v_inf-) = norm(v_inf+), r_p >= r_p_min)
+    opt.m += 3*opz.FB_Legs.size();        // FB constraints |r_infm| = SoI, r_p >= r_p_min), v_infm pointing inwards
 
     if(opz.Limited_ToF) opt.m += 1; // Cumulative ToF
 
@@ -281,7 +281,7 @@ int C_prb_RR_HMS::setup_worph(double *Xguess){
             }
 
             if((iLeg != 0)&&(iSeg == 0)){ // pos and vel at the beginning of each leg
-                for (int j = 0; j < 3; j++){ 
+                for(int j = 0; j < 3; j++){ 
                     opt.XL[i0 + 1 + j] = opt.XU[i0 + 1 + j] = 0;
                     opt.XL[i0 + 1 + 3 + j] = opt.XU[i0 + 1 + 3 + j] = 0;
                 }  
@@ -400,7 +400,9 @@ int C_prb_RR_HMS::setup_worph(double *Xguess){
     for(int i; i < opz.FB_Legs.size(); i++){
         opt.GL[iG0 + 2*i] = opt.GU[iG0 + 2*i] = 0; // |r_infm| = SoI_R
         opt.GL[iG0 + 2*i + 1] = 0; // r_p >= r_p_min
-        opt.GU[iG0 + 2*i + 1] = opz.SoI_R; // SoI radius
+        opt.GU[iG0 + 2*i + 1] = opz.SoI_R/rconv; 
+        opt.GL[iG0 + 2*i + 2] = -par.Infty; // v_infm pointing inwards
+        opt.GU[iG0 + 2*i + 2] = -0.0;
     }
 
     if(opz.Limited_ToF){ // ToF - Max_ToF <= 0
@@ -432,7 +434,7 @@ void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj){
     MatrixXd eye6x6 = MatrixXd::Identity(6, 6);
     C_UT ut(6);
     MatrixXd P_k1m(6, 6), P_km(6, 6), P_kp(6, 6), covDV(3, 3), KK_k(3, 6), KKaug_k(6, 6), P_k1m_hat(6, 6), KK_k1(3, 6), Pf(6, 6);
-    Vector3d r_km, v_km, r_k1m, v_k1m, v_kp, v_k1p, DV_k, DV_k1, r_k1_hat, v_k1m_hat, Pf_ev_r, Pf_ev_v, v_infp, v_infm;
+    Vector3d r_km, v_km, r_k1m, v_k1m, v_kp, v_k1p, DV_k, DV_k1, r_k1_hat, v_k1m_hat, Pf_ev_r, Pf_ev_v, v_infp, v_infm, v_infm_ver;
 
     F = 0;
     
@@ -483,16 +485,25 @@ void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj){
             propagateKEP_U(r_infm, v_infm, DT, mu_FB, r_infp, v_infp);
             // v_infp = DV_k - v_G + v_kp; // DV - v_p + v_1
             v_infp_vec.push_back(v_infp);
-            // cout << "DT" << DT << endl;
+            // cout << "r_infm: " << r_infm.transpose()*rconv << endl;
+            // cout << "v_infm: " << v_infm.transpose()*vconv << endl;
+            // cout << "DT: " << DT*tconv << endl;
+            // cout << "v_infp: " << v_infp.transpose()*vconv << endl;
             // cout << "P_km: " << P_km.eigenvalues().real().maxCoeff() << endl;
-            Pf_STM(r_infm, v_infm, P_km, DT, mu_FB, MatrixXd::Zero(6, 6), Pf);
+            // Pf_STM(r_infm, v_infm, P_km, DT, mu_FB, MatrixXd::Zero(6, 6), Pf);
             // cout << "Pf: " << Pf.eigenvalues().real().maxCoeff() << endl; cin.get();
 
-            P_km = Pf;
+            v_kp = v_infp + v_G;
+            // cout << "v_G: " << v_G.transpose()*vconv << endl;
+            // cout << "v_kp: " << v_kp.transpose()*vconv << endl;
+            // cout << "v_km: " << v_km.transpose()*vconv << endl; 
+            // cout << "DV: " << v_kp.transpose()*vconv - v_km.transpose()*vconv << endl; cin.get();
+            // P_km = Pf;
+        }
+        else{
+            v_kp = v_km + DV_k;
         }
 
-        // apply DV
-        if(!FB){v_kp = v_km + DV_k;}
         P_kp = (eye6x6 + KKaug_k) * P_km * (eye6x6 + KKaug_k).transpose();
         covDV = KK_k*P_km*KK_k.transpose();
 
@@ -547,6 +558,8 @@ void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj){
         FBm1 = find(opz.FB_Legs.begin(), opz.FB_Legs.end(), iLeg + 1) != end(opz.FB_Legs); // it is true in the leg right before FB
         if(FBm1){
             propagateKEP_U(r0_RV_vector[iLeg], v0_RV_vector[iLeg], ToF, 1, r_G, v_G);
+            // cout << "pv_kp: " << v_kp.transpose()*vconv << endl;
+            // cout << "pv_G: " << v_G.transpose()*vconv << endl;
             v_infm = v_kp - v_G; // v_1 - v_p
             v_infm_vec.push_back(v_infm);
         }
@@ -604,6 +617,9 @@ void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj){
                 for(int k = 0; k < nSeg + 1; k++){
                     G[iG0 + 6 + nPf_cstr + k] = v_DVnorm[k] + kstd*v_DVstd[k] - opz.DVtot_single_max; 
                 }
+                if(iLeg == 0){
+                    G[iG0 + 6 + nPf_cstr] = -1e-3;
+                }
             }
         }
 
@@ -619,6 +635,7 @@ void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj){
     if(opz.Fixed_ToF_Leg) iG0 += nLeg;
     for(int i; i < opz.FB_Legs.size(); i++){
         v_inf_sqrd = v_infm_vec[i].squaredNorm();
+        v_infm_ver = v_infm_vec[i]/v_infm_vec[i].norm();
         r_infm = r_infm_vec[i];
         a = 1/(2/r_infm.norm() - v_inf_sqrd/mu_FB);
         E = v_inf_sqrd/2 - mu_FB/r_infm.norm();
@@ -629,6 +646,8 @@ void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj){
         // G[iG0 + 2*i] = v_infm_vec[i].norm() - v_infp_vec[i].norm(); // v_infm_vec[i].norm() - v_infp_vec[i].norm()
         G[iG0 + 2*i] = r_infm.norm() - opz.SoI_R/rconv; // |r_infm| = SoI_R
         G[iG0 + 2*i + 1] = r_p - opz.r_min/rconv; // r_p - opz.r_min
+        G[iG0 + 2*i + 2] = v_infm_ver.dot(r_infm/r_infm.norm()); // v_infm pointing inwards
+        // cout << v_infm_vec[i].dot(r_infm) << endl; cin.get();
     }
     if(opz.Limited_ToF) G[opt.m - 1] = ToF - opz.Max_ToF;
     F *= ScaleObj;
@@ -703,7 +722,8 @@ void test_RR_HMS(){
 
     Vector3d r_k, v_km, r_k1, v_k1m, v_kp, DV_i, r_infm, v_infm, v_infp, r_G, v_G, r_infp, h_vec;
     MatrixXd P_km(6, 6), P_k1m(6, 6), P_kp(6, 6), Qd_k(6, 6), cov_DV_i(6, 6), KK_i(3, 6), KKaug_i(6, 6), Pf(6, 6);
-    vector<Vector3d> v_infm_vec, v_infp_vec, r_infm_vec;
+    vector<Vector3d> v_infm_vec, v_infp_vec, r_infm_vec, DV_FB_vec;
+    vector<double> DT_vec;
 
     vector<double> v_DVnorm, v_DVstd, ToF_par;
     C_KeplerMultiArc trajE, trajRV1, trajRV3;
@@ -759,23 +779,36 @@ void test_RR_HMS(){
                     propagateKEP_U(r_infm, v_infm, DT, mu_FB, r_infp, v_infp);
                     // v_infp = DV_k - v_G + v_kp; // DV - v_p + v_1
                     v_infp_vec.push_back(v_infp);
+                    DT_vec.push_back(DT);
                     // cout << "iSeg = " << iSeg << endl;
-                    // cout << "r_infm = " << r_infm.transpose() << endl;
-                    // cout << "v_infm = " << v_infm.transpose() << endl;
-                    // cout << "DT = " << DT << endl;
+                    // cout << "r_infm = " << r_infm.transpose()*prb.opz.rconv << endl;
+                    // cout << "v_infm = " << v_infm.transpose()*prb.opz.vconv << endl;
+                    // cout << "v_infp = " << v_infp.transpose()*prb.opz.vconv << endl;
+                    // cout << "DT = " << DT*prb.opz.tconv << endl; cin.get();
                     // cout << "mu_FB = " << prb.opz.mu_FB << endl;
-                    Pf_STM(r_infm, v_infm, P_km, DT, mu_FB, MatrixXd::Zero(6, 6), Pf);
-                    // cout << "Pf = " << Pf << endl;
-                    P_km = Pf;
+                    // cout << "P_km = " << P_km << endl;
+                    cout << "iLeg: " << iLeg << endl;
+                    cout << "iSeg: " << iSeg << endl;
+                    cout << "P_km = " << P_km << endl;
+                    // Pf_STM(r_infm, v_infm, P_km, DT, mu_FB, MatrixXd::Zero(6, 6), Pf);
+                    cout << "Pf = " << Pf << endl;
+
+                    v_kp = v_infp + v_G;
+                    // P_km = Pf;
+                    DV_FB_vec.push_back(v_kp - v_km);
+                }
+                else{
+                    v_kp = v_km + DV_i;
                 }
             }
+            else{
+                v_kp = v_km + DV_i;
+            }
 
-            // Apply DV
-            if(!FB){v_kp = v_km + DV_i;}
             P_kp = (eye6 + KKaug_i) * P_km * (eye6 + KKaug_i).transpose();
             cov_DV_i = KK_i*P_km*KK_i.transpose();
 
-            if((FB&&(iSeg == 0))||(iLeg == 0)&&(iSeg == 0)){
+            if(iSeg == 0){
                 DVnorm_i = 0; 
             }
             else{
@@ -788,8 +821,8 @@ void test_RR_HMS(){
             v_DVstd.push_back(DVstd_i);
 
             out_DVs << fixed << setw(12) << setprecision(6) << ToF;
-            for(int ii=0; ii<3; ii++) out_DVs << fixed <<setw(12) << setprecision(6) << r_k[ii];
-            for(int ii=0; ii<3; ii++) out_DVs << fixed <<setw(12) << setprecision(6) << DV_i[ii]; 
+            for(int ii = 0; ii < 3; ii++) out_DVs << fixed <<setw(12) << setprecision(6) << r_k[ii];
+            for(int ii = 0; ii < 3; ii++) out_DVs << fixed <<setw(12) << setprecision(6) << DV_i[ii]; 
             out_DVs << endl;
 
             print_covariance(r_k, v_kp, P_km, out_covEellipses);
@@ -801,7 +834,11 @@ void test_RR_HMS(){
 
             if (iSeg != nSeg){                
                 // Vector3d r_k1_hat, v_k1m_hat;  MatrixXd P_k1m_hat;
+                cout << "iLeg: " << iLeg << endl;
+                cout << "iSeg: " << iSeg << endl;
+                cout << "P_kp = " << P_kp << endl;
                 propagate_kepler_UT(r_k, v_kp, P_kp, dt, 1., Qd_k, r_k1, v_k1m, P_k1m);
+                cout << "P_k1m = " << P_k1m << endl;
                 traj.add_keplerArc(C_KeplerArc(r_k, v_kp, ToF, dt));
             }
             else{
@@ -841,7 +878,8 @@ void test_RR_HMS(){
         FLeg = accumulate(v_DVnorm.begin(), v_DVnorm.end(), 0.) + prb.kstd*(accumulate(v_DVstd.begin(), v_DVstd.end(), 0.));
         F += FLeg;
         out_sommario << endl;  
-        out_sommario << "FLeg = " << FLeg << endl;
+        out_sommario << "F_Leg = " << FLeg << endl;
+        out_sommario << "DV_Leg = " << FLeg*prb.opz.vconv << " (km/s)" << endl;
         out_sommario << "ToF_Leg (actual) = " << ToF_Leg << endl;
         out_sommario << "ToF_Leg (design) = " << tfin << endl;
 
@@ -850,6 +888,7 @@ void test_RR_HMS(){
         if (iLeg == nLeg - 1){
             out_sommario << endl;  
             out_sommario << "F = " << F << endl;
+            out_sommario << "DV = " << F*prb.opz.vconv << " (km/s)" << endl;
 
             out_sommario << "ToF (actual) = " << ToF << endl;
             out_sommario << "ToF (max) \t = " << prb.opz.Max_ToF << endl << endl;
@@ -863,16 +902,19 @@ void test_RR_HMS(){
                 h_vec = r_infm.cross(v_infm_vec[i]);
                 e = sqrt(1 + 2*E*h_vec.squaredNorm()/pow(mu_FB, 2));
                 theta = 2*asin(1/e);
-                r_p = mu_FB*(1 - sin(theta/2))/(v_inf_sqrd*prb.opz.vconv*prb.opz.vconv*sin(theta/2));
+                r_p = mu_FB*(1 - sin(theta/2))/(v_inf_sqrd*sin(theta/2));
 
-                out_sommario << "FB #" << i + 1 << ":" << endl;
-                out_sommario << "r_p = " << r_p << endl;
-                out_sommario << "|r_infm| = " << prb.opz.rconv*r_infm.norm() << endl;
-                out_sommario << "r_infm = " << r_infm[0] << " " << r_infm[1] << " " << r_infm[2] << endl;
-                out_sommario << "v_infm = " << v_infm_vec[i][0] << " " << v_infm_vec[i][1] << " " << v_infm_vec[i][2] << endl;
-                out_sommario << "v_infp = " << v_infp_vec[i][0] << " " << v_infp_vec[i][1] << " " << v_infp_vec[i][2] << endl;
-                out_sommario << "|v_infm| = " << v_infm_vec[i].norm() << endl;
-                out_sommario << "|v_infp| = " << v_infp_vec[i].norm() << endl << endl;
+                out_sommario << "FB #"          << i + 1 << ":" << endl;
+                out_sommario << "r_p = "        << r_p*prb.opz.rconv << endl;
+                out_sommario << "|r_infm| = "   << prb.opz.rconv*r_infm.norm() << endl;
+                out_sommario << "r_infm = "     << r_infm[0]*prb.opz.rconv << " " << r_infm[1]*prb.opz.rconv << " " << r_infm[2]*prb.opz.rconv << endl;
+                out_sommario << "v_infm = "     << v_infm_vec[i][0]*prb.opz.vconv << " " << v_infm_vec[i][1]*prb.opz.vconv << " " << v_infm_vec[i][2]*prb.opz.vconv << endl;
+                out_sommario << "v_infp = "     << v_infp_vec[i][0]*prb.opz.vconv << " " << v_infp_vec[i][1]*prb.opz.vconv << " " << v_infp_vec[i][2]*prb.opz.vconv << endl;
+                out_sommario << "DT = "         << DT_vec[i]*prb.opz.tconv << endl;
+                out_sommario << "DV_FB = "      << DV_FB_vec[i][0]*prb.opz.vconv << " " << DV_FB_vec[i][1]*prb.opz.vconv << " " << DV_FB_vec[i][2]*prb.opz.vconv << endl;
+                out_sommario << "|DV_FB| = "    << DV_FB_vec[i].norm()*prb.opz.vconv << endl; 
+                out_sommario << "|v_infm| = "   << v_infm_vec[i].norm()*prb.opz.vconv << endl;
+                out_sommario << "|v_infp| = "   << v_infp_vec[i].norm()*prb.opz.vconv << endl << endl;
             }
         }
 

@@ -71,8 +71,6 @@ Options_rendezvousUT_t::Options_rendezvousUT_t(const std::string &filename){
         }
         nSeg_vector.push_back(nSeg);
 
-        rRV_vector.push_back(rRV); 
-        vRV_vector.push_back(vRV);
         r0_RV_vector.push_back(r0_RV);
         v0_RV_vector.push_back(v0_RV);
 
@@ -100,13 +98,13 @@ void Options_rendezvousUT_t::emit(const std::string &filename){
     out << YAML::BeginMap;
         out << YAML::Key << "solver";
         out << YAML::BeginMap;
-        for(int i = 0; i < nLeg; i++){
-            namenSeg = "nSeg" + std::to_string(i + 1);
-            nametfin = "tfin" + std::to_string(i + 1);
+            for(int i = 0; i < nLeg; i++){
+                namenSeg = "nSeg" + std::to_string(i + 1);
+                nametfin = "tfin" + std::to_string(i + 1);
 
-            out << YAML::Key << namenSeg << YAML::Value << nSeg_vector[i];
-            out << YAML::Key << nametfin << YAML::Value << tfin_vector[i];
-        }
+                out << YAML::Key << namenSeg << YAML::Value << nSeg_vector[i];
+                out << YAML::Key << nametfin << YAML::Value << tfin_vector[i];
+            }
 
             out << YAML::Key << "nLeg" << YAML::Value << nLeg;
             out << YAML::Key << "E_Pf_constraint" << YAML::Value << E_Pf_constraint;

@@ -320,5 +320,5 @@ void ToF_Hyperbola(const Vector3d r_infm, const Vector3d v_infm, const double mu
     if(isnan(DT)){DT = 0;}
     // cout << "a = " << a << endl;
     // cout << "e = " << e << endl;
-    // cout << "ToF = " << ToF << endl;
+    // cout << "DT = " << DT << endl;
 }

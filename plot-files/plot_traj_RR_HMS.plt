@@ -19,7 +19,7 @@ chi_sq = sqrt(5.991)
 # semi_major_axis(x) = sqrt(chi_sq * x)
 
 set term pngcairo enhanced color font "Arial-Bold, 20"  size 1600, 1600 #lw 3
-set output "results/HMS-temp/traj.png"
+set output "results/HMS-temp/trajxy.png"
 set size ratio -1 # axis equal
 set pointsize 0.5
 set grid lt 1 lw 0.1 lc "black"
@@ -63,6 +63,51 @@ plot trajE using 2:3 with l notitle lw 2 lc "blue", \
      fileELLs2 using ($1)+($3)*scalaP:($2) + ($4)*scalaP w l lc "dark-green" lw 2 notitle, \
      fileELLs3 using ($1)+($3)*scalaP:($2) + ($4)*scalaP w l lc "dark-red" lw 2 notitle, \
      fileELLs4 using ($1)+($3)*scalaP:($2) + ($4)*scalaP w l lc "dark-yellow" lw 2 notitle
+
+# ---------------------------------------------------------------#
+#                       Gain - plot                              #
+# ---------------------------------------------------------------# 
+set term pngcairo enhanced color font "Arial-Bold, 20"  size 1600, 1600 #lw 3
+set output "results/HMS-temp/trajxz.png"
+set size ratio -1 # axis equal
+set pointsize 0.5
+set grid lt 1 lw 0.1 lc "black"
+set xrange [-1.8:1.8]
+set yrange [-0.8:0.8]
+
+rf = 1.6507
+
+scalaP = 1*chi_sq
+scalaV = 1
+e_step = 1
+
+stats filename2 using 2:4 nooutput
+N = STATS_records
+stats filename4 using 2:4 nooutput
+O = STATS_records
+stats trajRV1 using 2:4 nooutput
+M = STATS_records
+stats trajRV3 using 2:4 nooutput
+L = STATS_records
+
+plot trajE using 2:4 with l notitle lw 2 lc "blue", \
+     trajRV1 using 2:4 with l notitle lw 2 lc "black", \
+     trajRV1 using 2:4 every ::0::0 with points lc 'black' pt 6 lw 3 ps 3 notitle, \
+     trajRV1 using 2:4 every ::M-1::M-1 with points lc 'black' pt 4 lw 3 ps 3 notitle, \
+     trajRV3 using 2:4 with l notitle lw 2 lc "grey", \
+     trajRV3 using 2:4 every ::0::0 with points lc 'grey' pt 6 lw 3 ps 3 notitle, \
+     trajRV3 using 2:4 every ::L-1::L-1 with points lc 'grey' pt 4 lw 3 ps 3 notitle, \
+     filename1 using 2:4 with l lc "dark-magenta" lw 2 notitle, \
+     filename2 using 2:4 with l lc "dark-green" lw 2 notitle, \
+     filename3 using 2:4 with l lc "dark-red" lw 2 notitle, \
+     filename4 using 2:4 with l lc "orange" lw 2 notitle, \
+     filename1 using 2:4 every ::0::0 with points lc 'dark-magenta' pt 6 lw 3 ps 3 notitle, \
+     filename2 using 2:4 every ::N-1::N-1 with points lc 'dark-green' pt 2 lw 3 ps 3 notitle, \
+     filename4 using 2:4 every ::O-1::O-1 with points lc 'orange' pt 2 lw 3 ps 3 notitle, \
+     fileDVs1 using 2:4:($5)*scalaV:($7)*scalaV with vectors filled head lc "dark-magenta" lw 4 notitle, \
+     fileDVs2 using 2:4:($5)*scalaV:($7)*scalaV with vectors filled head lc "dark-green" lw 4 notitle, \
+     fileDVs3 using 2:4:($5)*scalaV:($7)*scalaV with vectors filled head lc "dark-red" lw 4 notitle, \
+     fileDVs4 using 2:4:($5)*scalaV:($7)*scalaV with vectors filled head lc "dark-yellow" lw 4 notitle
 
 # ---------------------------------------------------------------#
 #                       Gain - plot                              #

@@ -10,7 +10,7 @@ set (CMAKE_CXX_STANDARD 11)
 SET(DEBUG 0)
 
 IF(DEBUG MATCHES 1)
-    add_compile_options(-g -ggdb -O0 -std=c++11)
+    add_compile_options(-g -ggdb -O0 -std=c++11) #debug
 ELSE()
     add_compile_options(-O3 -w -fopenmp -std=c++11) #-ggdb
 ENDIF()

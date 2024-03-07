@@ -35,7 +35,7 @@ public:
     int sf, Max_iter;
 
     vector<int> nSeg_vector;
-    vector<Vector3d> rRV_vector, vRV_vector, r0_RV_vector, v0_RV_vector;
+    vector<Vector3d> r0_RV_vector, v0_RV_vector;
     vector<double> tfin_vector;
 
     vector<int> FB_Legs;

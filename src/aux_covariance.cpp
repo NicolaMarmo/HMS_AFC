@@ -5,12 +5,10 @@ void print_covariance(Vector3d r, Vector3d v, MatrixXd P, ostream &os)
     const double chi_sq = 1; //5.991; // 95% ellipse
         Eigen::EigenSolver<MatrixXd> es(P.block(0,0,2,2));
 
-         
             MatrixXd A = es.eigenvectors().real();
             A.col(0) = A.col(0)*sqrt(chi_sq *es.eigenvalues()(0).real());
             A.col(1) = A.col(1)*sqrt(chi_sq *es.eigenvalues()(1).real());
 
-            
             int npt=21;
             VectorXd vth = VectorXd::LinSpaced(npt,0, 2.*M_PI);
             MatrixXd B(2,npt); 
