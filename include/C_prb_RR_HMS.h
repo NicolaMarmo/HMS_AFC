@@ -12,7 +12,7 @@
 #include <vector>
 #include <numeric> //accumulate
 
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 using Eigen::Vector3d;
 using Eigen::VectorXd;
 using Eigen::Matrix3d;
@@ -78,7 +78,6 @@ class C_prb_RR_HMS
     const int nRes = 6;     //n. di equazioni di continuità
     const int nVars = 1 + 6 + 3 + 18; // YP [nVars x nSeg]    
     Options_rendezvousUT_t opz;
-
 
     /*
 	 * WORHP data structures
@@ -204,14 +203,13 @@ class C_prb_RR_HMS
     void init_lin(double *Xguess);    
 
 
-    void save_sol(string fname="../results/fullsol.dat", bool skipAsking=false)
-    {       
+    void save_sol(string fname="../results/fullsol.dat", bool skipAsking=false){       
         string ans = "S";
-        if (not(skipAsking)){
+        if(not(skipAsking)){
             //cout << "Salvare la soluzione?" << endl;
             //cin >> ans;
         }
-        if (ans.compare("S") == 0 || ans.compare("s") == 0){
+        if(ans.compare("S") == 0 || ans.compare("s") == 0){
             ofstream out_fullsol(fname);
             for(int iLeg = 0; iLeg < nLeg; iLeg++){
                 nSeg = nSeg_vector[iLeg];
@@ -226,18 +224,15 @@ class C_prb_RR_HMS
         }
     };
 
-    void load_sol(string fname, double* Xguess)
-    {
+    void load_sol(string fname, double* Xguess){
         std::string ans;
         cout << "caricare il file soluzione? (s/n)" << endl;
         cin >> ans;
-        if (ans.compare("S") == 0 || ans.compare("s") == 0)
-        {
+        if (ans.compare("S") == 0 || ans.compare("s") == 0){
             vector<double> v_xGuess;
             std::ifstream infile(fname);
             std::string line;
-            while (std::getline(infile, line))
-            {
+            while (std::getline(infile, line)){
                 std::istringstream iss(line);
                 double num;
                 while (iss >> num) 

@@ -13,6 +13,6 @@ USER NAME="Nicola Marmo" COMPANY="Sapienza University of Rome"
 #
 # Known hosts
 #
-HOST NAME="Spectral03" MAC="a8:5e:45:5c:67:ad"
-  KEY TYPE=academic MODULE="worhp" VERSION="2.0" UNTIL="21.02.2025" SIG="v0MHijujS3yBVM307E5Z7pSOUxUbf2Kl/gyUArzTW3dZzYA6dRA/rJ7dJXlKI1Y+YgHA+YD9aBXA5G0wD+Kevw=="
-  KEY TYPE=academic MODULE="zen" VERSION="2.0" UNTIL="21.02.2025" SIG="bw33s7TGQxzXeEZWu7p7FFHRQ7W2f/ZPqg0p8dkNkkmZK5rcNeR5njxpyWxGdWXuUB+9hIviHP40cYRKi7I1/g=="
+HOST NAME="Spectral02" MAC="a8:5e:45:5c:66:f0"
+  KEY TYPE=academic MODULE="worhp" VERSION="2.0" UNTIL="21.05.2025" SIG="Hwav4n3l2/HOrWBlTcys+RHSxnXpSRSgkqX6WjoRzCFsUCdjR7dhVjkssG7BQnFg0L45iAy2FWzdlfPEmNjHGw=="
+  KEY TYPE=academic MODULE="zen" VERSION="2.0" UNTIL="21.05.2025" SIG="gsK/gWDE8FkNxeZYFYtMtEb6g0X+Cr0uatZ2AzRa5PyQuqq8WfoUF60TiNlfWbu7W+TkW6b/gx/nzNjCzCsy6g=="

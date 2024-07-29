@@ -18,11 +18,11 @@ solver:
   Equal_Segment_ToF:  false          # true | false                                               
 
 mission:
-  output_folder: "AFC13/"
-  firstguess_folder: "AFC14/" # type "d" for default folder "results/HMS-temp", otherwise type a folder in "dbSOL/"
+  output_folder: "AFC17/"
+  firstguess_folder: "AFC16/" # type "d" for default folder "results/HMS-temp", otherwise type a folder in "dbSOL/"
   muPrimary: 132712440018                     # [km^3/s^2]
-  mu_FB: 398600.4418
-  SoI_R: 929000 # [km]
+  mu_FB:  398600.4418
+  SoI_R:  929000 # [km]
   r0:     [-1.036860803762830E+08, -1.097048551347926E+08,  8.148040847457945E+03]   
   v0:     [ 2.115894868015005E+01, -2.056183496280147E+01,  1.289253233919929E-03] 
   r0_RV1: [-1.261052092139849E+08,  1.116214642463102E+08, -7.045953307462998E+06]   
@@ -47,11 +47,11 @@ mission:
 
   r_min: 7000. # [km]
   DVtot_max: -1.                              # [km/s]  
-  DVtot_single_max: 0.125                     
+  DVtot_single_max: 0.15                     
   
   #questi sono valori sigma^2 
-  sigma2_r0:     1.e-10  
-  sigma2_v0:     1.e-11  
+  sigma2_r0:     2.e-7  
+  sigma2_v0:     2.e-8  
   sigma2_rf:     5.e-7     
   sigma2_vf:     5.e-8   
   sigma2_rRV:    5.e-8    

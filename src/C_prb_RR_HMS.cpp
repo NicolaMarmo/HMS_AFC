@@ -490,7 +490,7 @@ void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj){
             // cout << "DT: " << DT*tconv << endl;
             // cout << "v_infp: " << v_infp.transpose()*vconv << endl;
             // cout << "P_km: " << P_km.eigenvalues().real().maxCoeff() << endl;
-            // Pf_STM(r_infm, v_infm, P_km, DT, mu_FB, MatrixXd::Zero(6, 6), Pf);
+            Pf_STM(r_infm, v_infm, P_km, DT, mu_FB, MatrixXd::Zero(6, 6), Pf);
             // cout << "Pf: " << Pf.eigenvalues().real().maxCoeff() << endl; cin.get();
 
             v_kp = v_infp + v_G;
@@ -498,7 +498,7 @@ void C_prb_RR_HMS::evalFG(double *X, double &F, double *G, double ScaleObj){
             // cout << "v_kp: " << v_kp.transpose()*vconv << endl;
             // cout << "v_km: " << v_km.transpose()*vconv << endl; 
             // cout << "DV: " << v_kp.transpose()*vconv - v_km.transpose()*vconv << endl; cin.get();
-            // P_km = Pf;
+            P_km = Pf;
         }
         else{
             v_kp = v_km + DV_k;
@@ -787,14 +787,14 @@ void test_RR_HMS(){
                     // cout << "DT = " << DT*prb.opz.tconv << endl; cin.get();
                     // cout << "mu_FB = " << prb.opz.mu_FB << endl;
                     // cout << "P_km = " << P_km << endl;
-                    cout << "iLeg: " << iLeg << endl;
-                    cout << "iSeg: " << iSeg << endl;
-                    cout << "P_km = " << P_km << endl;
-                    // Pf_STM(r_infm, v_infm, P_km, DT, mu_FB, MatrixXd::Zero(6, 6), Pf);
-                    cout << "Pf = " << Pf << endl;
+                    // cout << "iLeg: " << iLeg << endl;
+                    // cout << "iSeg: " << iSeg << endl;
+                    // cout << "P_km = " << P_km << endl;
+                    Pf_STM(r_infm, v_infm, P_km, DT, mu_FB, MatrixXd::Zero(6, 6), Pf);
+                    // cout << "Pf = " << Pf << endl;
 
                     v_kp = v_infp + v_G;
-                    // P_km = Pf;
+                    P_km = Pf;
                     DV_FB_vec.push_back(v_kp - v_km);
                 }
                 else{
@@ -834,11 +834,7 @@ void test_RR_HMS(){
 
             if (iSeg != nSeg){                
                 // Vector3d r_k1_hat, v_k1m_hat;  MatrixXd P_k1m_hat;
-                cout << "iLeg: " << iLeg << endl;
-                cout << "iSeg: " << iSeg << endl;
-                cout << "P_kp = " << P_kp << endl;
                 propagate_kepler_UT(r_k, v_kp, P_kp, dt, 1., Qd_k, r_k1, v_k1m, P_k1m);
-                cout << "P_k1m = " << P_k1m << endl;
                 traj.add_keplerArc(C_KeplerArc(r_k, v_kp, ToF, dt));
             }
             else{

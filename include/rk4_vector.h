@@ -13,7 +13,7 @@ ToDO:	il metodo di integrazione deve resituire un codice se ï¿½ tutto ok o si ï¿
 # include <iostream>
 #include <vector>
 
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 using Eigen::VectorXd;
 using Eigen::MatrixXd;
 

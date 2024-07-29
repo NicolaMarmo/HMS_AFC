@@ -56,6 +56,7 @@
         "typeinfo": "cpp",
         "random": "cpp",
         "bit": "cpp",
-        "numbers": "cpp"
+        "numbers": "cpp",
+        "dense": "cpp"
     }
 }
